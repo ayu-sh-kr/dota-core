@@ -12,6 +12,11 @@ export interface ComponentConfig {
     shadow?: boolean
 }
 
+/**
+ * Decorator for registering web components
+ * @param config
+ * @constructor
+ */
 export function Component(config: ComponentConfig): ClassDecorator{
     return function (target: any) {
         customElements.define(config.selector, target);
