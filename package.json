@@ -8,7 +8,8 @@
   "module": "dist/index.mjs",
   "scripts": {
     "build": "tsup index.ts --format cjs,esm --dts",
-    "lint": "tsc"
+    "lint": "tsc",
+    "release": "pnpm run build && changeset publish"
   },
   "keywords": [
     "Typescript",
