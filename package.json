@@ -1,0 +1,26 @@
+{
+  "name": "@ayu-sh-kr/dota-core",
+  "version": "1.0.0",
+  "description": "This is a web component support module",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "module": "dist/index.mjs",
+  "scripts": {
+    "build": "tsup index.ts --format cjs,esm --dts",
+    "lint": "tsc"
+  },
+  "keywords": [
+    "Typescript",
+    "Web Component",
+    "Decorated Components"
+  ],
+  "author": "ayu-sh-kr",
+  "license": "MIT",
+  "devDependencies": {
+    "@changesets/cli": "^2.27.7",
+    "@swc/core": "^1.6.6",
+    "tsup": "^8.1.0",
+    "typescript": "^5.5.2"
+  }
+}
