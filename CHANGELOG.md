@@ -1,5 +1,11 @@
 # @ayu-sh-kr/dota-core
 
+## 1.2.0
+
+### Minor Changes
+
+- 2613dc7: Change the publish configuration in package.json: files: ['dist']
+
 ## 1.1.1
 
 ### Patch Changes
