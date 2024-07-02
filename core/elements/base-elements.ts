@@ -1,3 +1,4 @@
+import {MethodDetails} from "@dota/types/core.types.ts";
 
 export abstract class BaseElement extends HTMLElement {
     [key: string]: any
@@ -12,6 +13,9 @@ export abstract class BaseElement extends HTMLElement {
 
     connectedCallback() {
 
+        let methods: MethodDetails[] = Reflect.getMetadata(this.constructor.name, this.constructor);
+
+
         if(this.isShadow){
             this.shadowRoot = this.attachShadow({mode: "open"})
         }
@@ -20,9 +24,11 @@ export abstract class BaseElement extends HTMLElement {
             console.log(this.shadowRoot)
             if (this.shadowRoot) {
                 this.shadowRoot.innerHTML = this.render();
+                this.bindEvents(this, methods);
             }
         } else {
             this.innerHTML = this.render();
+            this.bindEvents(this, methods);
         }
     }
 
@@ -30,13 +36,17 @@ export abstract class BaseElement extends HTMLElement {
 
     attributeChangedCallback(name: string, oldValue: string, newValue: string) {
 
+        let methods: MethodDetails[] = Reflect.getMetadata(this.constructor.name, this.constructor);
+
         if (newValue !== oldValue) {
             this[name] = newValue;
 
             if (this.isShadow && this.shadowRoot) {
                 this.shadowRoot.innerHTML = this.render();
+                this.bindEvents(this.shadowRoot, methods)
             } else {
                 this.innerHTML = this.render();
+                this.bindEvents(this, methods)
             }
 
         }
@@ -48,18 +58,22 @@ export abstract class BaseElement extends HTMLElement {
     }
 
 
-}
+    bindEvents(root: HTMLElement | ShadowRoot, methods: MethodDetails[]) {
 
+        const eventPattern = /@(\w+)="{(\w+)}"/g;
 
-export function Update(): MethodDecorator {
-    return function (target: any, propertyKey: string | symbol, descriptor: PropertyDescriptor) {
-        const originalMethod = descriptor.value;
+        for (const match of root.innerHTML.matchAll(eventPattern)) {
+            const eventName = match[1];
+            const methodName = match[2];
+            const methodDetail = methods.find(m => m.name === methodName);
 
-        descriptor.value = function (this: any, name: string, value: string) {
-            originalMethod.call(this, name, value);
-            this.connectedCallback();
-        };
+            if (methodDetail) {
+                const elements = root.querySelectorAll(`[\\@${eventName}="{${methodName}}"]`);
+                elements.forEach(element => {
+                    element.addEventListener(eventName, methodDetail.method.bind(this));
+                });
+            }
+        }
+    }
 
-        return descriptor;
-    };
 }
