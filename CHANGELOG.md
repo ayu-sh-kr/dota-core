@@ -1,5 +1,11 @@
 # @ayu-sh-kr/dota-core
 
+## 1.4.1
+
+### Patch Changes
+
+- e3e562b: Fixed error in Property Decorator
+
 ## 1.4.0
 
 ### Minor Changes
