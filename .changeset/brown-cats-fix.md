@@ -1,53 +1,8 @@
-### DOTA CORE
-* Templating Library for Web Components
-* Provides decorators based support for Web Components
+---
+"@ayu-sh-kr/dota-core": patch
+---
 
-```typescript
-import {HTML, Component, BaseElement, Property, EventListener} from "./index";
-
-export class Widget extends BaseElement {
-
-    @Propert({name: 'data'})
-    data: string;
-
-    constructor() {
-        super();
-    }
-    
-    @EventListener({name: 'click'})
-    handleClick() {
-        console.log('clicked')
-    }
-    
-    render() {
-        return HTML`<div>Click Me</div>`
-    }
-}
-```
-
-
-### Inner Component Event Handling
-
-```typescript
-import {BaseElement} from "./base-elements";
-import {HTML} from "./html.render";
-
-export class ColorTextComponent extends BaseElement {
-    
-    handleClick(){
-        console.log('clicked')
-    }
-
-    render() {
-        return HTML`
-            <div @click="{handleClick}">Click Me<div>
-        `
-    }
-}
-```
-*Currently only work for methods with no parameters*
-
-### Exposing Class Methods to Global Namespace
+Fix bugs and added new features
 
 ```typescript
 @Component({
@@ -66,7 +21,8 @@ export class ColoredTextComponent extends BaseElement {
     bold!: boolean
 
     colorSet = ['text-purple-400', 'text-yellow-400', 'text-emerald-400']
-    
+
+
     constructor() {
         super();
     }
@@ -95,3 +51,6 @@ export class ColoredTextComponent extends BaseElement {
 
 }
 ```
+
+* Adding @Expose to method of class will expose them to global space.
+* Fix @Component, now shadow parameter will attach shadow root based on its value.
