@@ -8,7 +8,7 @@ export interface EventConfig {
 
 
 export function EventListener(config: EventConfig): MethodDecorator {
-    console.log(`Handling Event ${config.name}`)
+
     return function (target: any, propertyKey: string | symbol, descriptor: PropertyDescriptor) {
         const originalConnectedCallback: Function = target.connectedCallback;
 
