@@ -3,7 +3,7 @@ import {MethodDetails} from "@dota/types/core.types.ts";
 export abstract class BaseElement extends HTMLElement {
     [key: string]: any
 
-    isShadow: boolean = false;
+    isShadow!: boolean;
 
     shadowRoot!: ShadowRoot
 
@@ -13,15 +13,17 @@ export abstract class BaseElement extends HTMLElement {
 
     connectedCallback() {
 
+        this.exposeMethods();
+
         let methods: MethodDetails[] = Reflect.getMetadata(this.constructor.name, this.constructor);
 
+        this.isShadow = Reflect.getMetadata(this.constructor.name + ':' + 'shadow', this.constructor)
 
         if(this.isShadow){
             this.shadowRoot = this.attachShadow({mode: "open"})
         }
 
         if (this.isShadow) {
-            console.log(this.shadowRoot)
             if (this.shadowRoot) {
                 this.shadowRoot.innerHTML = this.render();
                 this.bindEvents(this, methods);
@@ -40,7 +42,6 @@ export abstract class BaseElement extends HTMLElement {
 
         if (newValue !== oldValue) {
             this[name] = newValue;
-
             if (this.isShadow && this.shadowRoot) {
                 this.shadowRoot.innerHTML = this.render();
                 this.bindEvents(this.shadowRoot, methods)
@@ -48,7 +49,6 @@ export abstract class BaseElement extends HTMLElement {
                 this.innerHTML = this.render();
                 this.bindEvents(this, methods)
             }
-
         }
     }
 
@@ -73,6 +73,20 @@ export abstract class BaseElement extends HTMLElement {
                     element.addEventListener(eventName, methodDetail.method.bind(this));
                 });
             }
+        }
+    }
+
+    exposeMethods() {
+        let data: Map<string, MethodDetails> = Reflect.getMetadata(`${this.constructor.name}:Exposed`, this.constructor);
+
+        if(data) {
+            data.forEach((value, key)  => {
+                if (typeof window !== "undefined") {
+                    if(!(window as any)[key]) {
+                        (window as any)[key] = value.method.bind(this);
+                    }
+                }
+            });
         }
     }
 
