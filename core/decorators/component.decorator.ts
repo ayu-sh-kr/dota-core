@@ -1,3 +1,6 @@
+import {MethodDetails} from "@dota/types/core.types.ts";
+import 'reflect-metadata'
+
 /**
  * Configuration object for the Component decorator.
  *  @type {Object} ComponentConfig
@@ -19,6 +22,20 @@ export interface ComponentConfig {
  */
 export function Component(config: ComponentConfig): ClassDecorator{
     return function (target: any) {
+
+        // Get the names of the methods in the target class
+        const methodNames = Object.getOwnPropertyNames(target.prototype)
+            .filter(prop => typeof target.prototype[prop] === 'function' && prop !== 'constructor');
+
+        // Create an array of MethodDetails objects
+        const methods: MethodDetails[] = methodNames.map(name => ({
+            name: name,
+            method: target.prototype[name],
+        }));
+
+        // Store the methods in the metadata
+        Reflect.defineMetadata(target.name, methods, target);
+
         customElements.define(config.selector, target);
     }
 }
