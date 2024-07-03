@@ -1,9 +1,5 @@
+import {PropertyConfig} from "@dota/types/core.types.ts";
 
-
-export interface PropertyConfig {
-    name: string;
-    default?: string
-}
 
 export function Property(config: PropertyConfig): PropertyDecorator{
     return function (target: any, propertyKey: string | symbol){

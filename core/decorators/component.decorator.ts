@@ -1,19 +1,6 @@
-import {MethodDetails} from "@dota/types/core.types.ts";
+import {ComponentConfig, MethodDetails} from "@dota/types/core.types.ts";
 import 'reflect-metadata'
 
-/**
- * Configuration object for the Component decorator.
- *  @type {Object} ComponentConfig
- *  @prop {string} [selecter = ''] - The custom element name to define.
- *  @prop {boolean} [shadow = false] - Optional.
- *  Determines whether the component should use a shadow root.
- *  Defaults to false.
- */
-
-export interface ComponentConfig {
-    selector: string;
-    shadow?: boolean
-}
 
 /**
  * Decorator for registering web components
