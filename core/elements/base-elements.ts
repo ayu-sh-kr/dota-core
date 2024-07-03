@@ -1,4 +1,4 @@
-import {MethodDetails} from "@dota/types/core.types.ts";
+import {BindConfig, MethodDetails} from "@dota/types/core.types.ts";
 
 export abstract class BaseElement extends HTMLElement {
     [key: string]: any
@@ -32,6 +32,7 @@ export abstract class BaseElement extends HTMLElement {
             this.innerHTML = this.render();
             this.bindEvents(this, methods);
         }
+        this.bindMethods();
     }
 
     abstract render(): string;
@@ -50,6 +51,7 @@ export abstract class BaseElement extends HTMLElement {
                 this.bindEvents(this, methods)
             }
         }
+        this.bindMethods();
     }
 
     setAttribute(qualifiedName: string, value: string) {
@@ -61,7 +63,7 @@ export abstract class BaseElement extends HTMLElement {
     bindEvents(root: HTMLElement | ShadowRoot, methods: MethodDetails[]) {
 
         const eventPattern = /@(\w+)="{(\w+)}"/g;
-
+        
         for (const match of root.innerHTML.matchAll(eventPattern)) {
             const eventName = match[1];
             const methodName = match[2];
@@ -73,6 +75,27 @@ export abstract class BaseElement extends HTMLElement {
                     element.addEventListener(eventName, methodDetail.method.bind(this));
                 });
             }
+        }
+    }
+
+    bindMethods() {
+        let key = `${this.constructor.name}:Bind`
+        let data: Map<string, BindConfig> = Reflect.getMetadata(key, this.constructor);
+        if(data) {
+            data.forEach((config, methodName) => {
+                const element = this.querySelector(config.id);
+                if (element) {
+                    const method = this[methodName];
+                    if (config.params) {
+                        // If params are provided, create a wrapper function to include them.
+                        const boundMethodWithParams = (...args: any[]) => method.apply(this, [...config.params!, ...args]);
+                        element.addEventListener(config.event, boundMethodWithParams);
+                    } else {
+                        // If no params are provided, bind the method directly.
+                        element.addEventListener(config.event, method.bind(this));
+                    }
+                }
+            });
         }
     }
 
