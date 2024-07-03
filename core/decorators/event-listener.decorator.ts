@@ -1,10 +1,4 @@
-
-
-export interface EventConfig {
-    name: string;
-    options?: EventListenerOptions
-}
-
+import {EventConfig} from "@dota/types/core.types.ts";
 
 
 export function EventListener(config: EventConfig): MethodDecorator {
