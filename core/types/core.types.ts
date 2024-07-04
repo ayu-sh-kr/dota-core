@@ -34,3 +34,9 @@ export interface EventConfig {
     name: string;
     options?: EventListenerOptions
 }
+
+export interface PropertyDetails {
+    name: string
+    prototype: string
+    default?: any
+}
