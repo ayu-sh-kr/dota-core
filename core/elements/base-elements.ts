@@ -1,4 +1,4 @@
-import {BindConfig, MethodDetails} from "@dota/types/core.types.ts";
+import {BindConfig, MethodDetails, PropertyDetails} from "@dota/types/core.types.ts";
 
 export abstract class BaseElement extends HTMLElement {
     [key: string]: any
@@ -42,7 +42,9 @@ export abstract class BaseElement extends HTMLElement {
         let methods: MethodDetails[] = Reflect.getMetadata(this.constructor.name, this.constructor);
 
         if (newValue !== oldValue) {
-            this[name] = newValue;
+
+            this.bindProperty(name, newValue);
+
             if (this.isShadow && this.shadowRoot) {
                 this.shadowRoot.innerHTML = this.render();
                 this.bindEvents(this.shadowRoot, methods)
@@ -51,6 +53,7 @@ export abstract class BaseElement extends HTMLElement {
                 this.bindEvents(this, methods)
             }
         }
+
         this.bindMethods();
     }
 
@@ -110,6 +113,21 @@ export abstract class BaseElement extends HTMLElement {
                     }
                 }
             });
+        }
+    }
+
+    bindProperty(name: string, value: string) {
+
+        const key = `${this.constructor.name}:Property`;
+
+        let data: Map<string, PropertyDetails> = Reflect.getMetadata(key, this.constructor);
+
+        if (data) {
+            let property = data.get(name);
+
+            if(property) {
+                this[property.prototype] = value;
+            }
         }
     }
 
