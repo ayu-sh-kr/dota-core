@@ -24,8 +24,8 @@
     "noUnusedParameters": false,
     "noFallthroughCasesInSwitch": true,
     "paths": {
-      "@dota/*": ["./core/*"]
+      "@dota/*": ["./src/*"]
     }
   },
-  "include": ["core"]
+  "include": ["src"]
 }

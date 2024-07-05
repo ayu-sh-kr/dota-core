@@ -1,4 +1,4 @@
-import {MethodDetails} from "@dota/types/core.types.ts";
+import {MethodDetails} from "@dota/core/types/core.types.ts";
 
 export function Expose(): MethodDecorator {
     return function (target: any, propertyKey: string | symbol, descriptor: PropertyDescriptor) {

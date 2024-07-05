@@ -1,4 +1,4 @@
-import {EventConfig} from "@dota/types/core.types.ts";
+import {EventConfig} from "@dota/core/types/core.types.ts";
 
 
 export function EventListener(config: EventConfig): MethodDecorator {

@@ -1,4 +1,4 @@
-import {BindConfig} from "@dota/types/core.types.ts";
+import {BindConfig} from "@dota/core/types/core.types.ts";
 
 
 export function BindEvent(config: BindConfig): MethodDecorator {

@@ -1,4 +1,4 @@
-import {ComponentConfig, MethodDetails} from "@dota/types/core.types.ts";
+import {ComponentConfig, MethodDetails} from "@dota/core/types/core.types.ts";
 import 'reflect-metadata'
 
 

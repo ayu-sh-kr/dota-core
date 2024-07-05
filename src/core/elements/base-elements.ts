@@ -1,4 +1,4 @@
-import {BindConfig, MethodDetails, PropertyDetails} from "@dota/types/core.types.ts";
+import {BindConfig, MethodDetails, PropertyDetails} from "@dota/core/types/core.types.ts";
 
 export abstract class BaseElement extends HTMLElement {
     [key: string]: any

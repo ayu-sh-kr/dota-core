@@ -1,4 +1,4 @@
-import {PropertyConfig, PropertyDetails} from "@dota/types/core.types.ts";
+import {PropertyConfig, PropertyDetails} from "@dota/core/types/core.types.ts";
 
 
 export function Property(config: PropertyConfig): PropertyDecorator{
