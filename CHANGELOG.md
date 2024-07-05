@@ -1,5 +1,11 @@
 # @ayu-sh-kr/dota-core
 
+## 1.5.3
+
+### Patch Changes
+
+- 3762dd4: exported the BaseElement class
+
 ## 1.5.2
 
 ### Patch Changes
