@@ -1,5 +1,11 @@
 # @ayu-sh-kr/dota-core
 
+## 1.5.2
+
+### Patch Changes
+
+- 90a9de7: Move Core to src folder for better structuring
+
 ## 1.5.1
 
 ### Patch Changes
