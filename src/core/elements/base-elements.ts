@@ -91,7 +91,7 @@ export abstract class BaseElement extends HTMLElement {
                     const method = this[methodName];
                     if (config.params) {
                         // If params are provided, create a wrapper function to include them.
-                        const boundMethodWithParams = (...args: any[]) => method.apply(this, [...config.params!, ...args]);
+                        const boundMethodWithParams = (event: Event, ...args: any[]) => method.apply(this, event, [...config.params!, ...args]);
                         element.addEventListener(config.event, boundMethodWithParams);
                     } else {
                         // If no params are provided, bind the method directly.
