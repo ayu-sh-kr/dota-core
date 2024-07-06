@@ -1,5 +1,11 @@
 # @ayu-sh-kr/dota-core
 
+## 1.5.4
+
+### Patch Changes
+
+- 55b0cf8: Wrote docs and fix HTML template render
+
 ## 1.5.3
 
 ### Patch Changes
