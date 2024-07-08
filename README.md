@@ -172,3 +172,32 @@ export class TextComponent extends BaseElement {
 ```html
 <text-component data="Text to render"></text-component>
 ```
+
+### Add Code and Changes After View is Rendered
+
+```typescript
+import {BaseElement, Component, HTML} from "./index";
+import {AfterInit} from "./after-init.decorator";
+
+@Component({
+    selector: 'neat-pots',
+    shadow: false
+})
+export class NeatPotsBeam extends BaseElement {
+
+    constructor() {
+        super();
+    }
+
+    @AfterInit()
+    afterInit() {
+        console.log('Run After View is Rendered');
+    }
+
+    render() {
+        return HTML`
+            <div>This is a Custom Element Component</div>
+        `
+    }
+}
+```
