@@ -1,5 +1,37 @@
 # @ayu-sh-kr/dota-core
 
+## 1.5.5
+
+### Patch Changes
+
+- 860add1: Added Decorator AfterInit -> Run methods after view initialization
+
+  ```typescript
+  import { BaseElement, Component, HTML } from "./index";
+  import { AfterInit } from "./after-init.decorator";
+
+  @Component({
+    selector: "neat-pots",
+    shadow: false,
+  })
+  export class NeatPotsBeam extends BaseElement {
+    constructor() {
+      super();
+    }
+
+    @AfterInit()
+    afterInit() {
+      console.log("Run After View is Rendered");
+    }
+
+    render() {
+      return HTML`
+              <div>This is a Custom Element Component</div>
+          `;
+    }
+  }
+  ```
+
 ## 1.5.4
 
 ### Patch Changes
