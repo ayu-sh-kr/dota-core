@@ -6,4 +6,5 @@ export {Expose} from "@dota/core/decorators/expose.decorator.ts";
 export {AfterInit} from "@dota/core/decorators/after-init.decorator.ts";
 export {BaseElement} from "@dota/core/elements/base-elements.ts";
 export {HTML} from "@dota/core/render/html.render.ts";
+export {EventEmitter} from "@dota/core/utils/EventEmitter.ts";
 export type {PropertyConfig, EventConfig, PropertyDetails, BindConfig, MethodDetails, ComponentConfig} from "@dota/core/types/core.types.ts";
