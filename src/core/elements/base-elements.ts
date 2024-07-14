@@ -13,25 +13,13 @@ export abstract class BaseElement extends HTMLElement {
 
     connectedCallback() {
 
+        // Expose the required method if annotated with @Expose
         this.exposeMethods();
 
-        let methods: MethodDetails[] = Reflect.getMetadata(this.constructor.name, this.constructor);
+        // Bind the HTML that is render the component
+        this.bindHTML()
 
-        this.isShadow = Reflect.getMetadata(this.constructor.name + ':' + 'shadow', this.constructor)
-
-        if(this.isShadow){
-            this.shadowRoot = this.attachShadow({mode: "open"})
-        }
-
-        if (this.isShadow) {
-            if (this.shadowRoot) {
-                this.shadowRoot.innerHTML = this.render();
-                this.bindEvents(this, methods);
-            }
-        } else {
-            this.innerHTML = this.render();
-            this.bindEvents(this, methods);
-        }
+        // Bind the events with the method of the component
         this.bindMethods();
     }
 
@@ -62,7 +50,33 @@ export abstract class BaseElement extends HTMLElement {
         super.setAttribute(qualifiedName, value);
     }
 
+    bindHTML() {
+        let methods: MethodDetails[] = Reflect.getMetadata(this.constructor.name, this.constructor);
 
+        this.isShadow = Reflect.getMetadata(this.constructor.name + ':' + 'shadow', this.constructor)
+
+        if(this.isShadow){
+            this.shadowRoot = this.attachShadow({mode: "open"})
+        }
+
+        if (this.isShadow) {
+            if (this.shadowRoot) {
+                this.shadowRoot.innerHTML = this.render();
+                this.bindEvents(this, methods);
+            }
+        } else {
+            this.innerHTML = this.render();
+            this.bindEvents(this, methods);
+        }
+    }
+
+
+    /**
+     * Method to bind the event starting with @ in the inner html of component.
+     * @method {Function} bindEvents
+     * @param {HTMLElement | ShadowRoot} root
+     * @param {MethodDetails[]} methods
+     */
     bindEvents(root: HTMLElement | ShadowRoot, methods: MethodDetails[]) {
 
         const eventPattern = /@(\w+)="{(\w+)}"/g;
@@ -81,6 +95,10 @@ export abstract class BaseElement extends HTMLElement {
         }
     }
 
+    /**
+     * Method to bind the component's internal event to its methods
+     * @method {Functional}: bindMethods
+     */
     bindMethods() {
         let key = `${this.constructor.name}:Bind`
         let data: Map<string, BindConfig> = Reflect.getMetadata(key, this.constructor);
@@ -102,6 +120,10 @@ export abstract class BaseElement extends HTMLElement {
         }
     }
 
+    /**
+     * Method to expose component methods to global scope
+     * @method {Function}: exposeMethods()
+     */
     exposeMethods() {
         let data: Map<string, MethodDetails> = Reflect.getMetadata(`${this.constructor.name}:Exposed`, this.constructor);
 
@@ -116,6 +138,13 @@ export abstract class BaseElement extends HTMLElement {
         }
     }
 
+
+    /**
+     * Called By attributeChangeCallback to bind the property with new value
+     * @method {Function}: bindProperty()
+     * @param name
+     * @param value
+     */
     bindProperty(name: string, value: string) {
 
         const key = `${this.constructor.name}:Property`;
