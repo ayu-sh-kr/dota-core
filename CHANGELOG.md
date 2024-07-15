@@ -1,5 +1,11 @@
 # @ayu-sh-kr/dota-core
 
+## 1.5.7
+
+### Patch Changes
+
+- 8bce8ff: Update EventListener to listen for window and element level events
+
 ## 1.5.6
 
 ### Patch Changes
