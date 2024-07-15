@@ -59,7 +59,8 @@ export interface PropertyConfig {
  */
 export interface EventConfig {
     name: string;
-    options?: EventListenerOptions
+    options?: EventListenerOptions;
+    type: EventType
 }
 
 
@@ -73,4 +74,8 @@ export interface PropertyDetails {
     name: string
     prototype: string
     default?: any
+}
+
+export enum EventType {
+    WINDOW, ROOT
 }
