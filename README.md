@@ -3,7 +3,7 @@
 * Provides decorators based support for Web Components
 
 ```typescript
-import {HTML, Component, BaseElement, Property, EventListener} from "./index";
+import {HTML, Component, BaseElement, Property, EventListener, EventType} from "./index";
 
 export class Widget extends BaseElement {
 
@@ -13,17 +13,44 @@ export class Widget extends BaseElement {
     constructor() {
         super();
     }
-    
-    @EventListener({name: 'click'})
+
+    @EventListener({name: 'click', type: EventType.ROOT})
     handleClick() {
         console.log('clicked')
     }
-    
+
     render() {
         return HTML`<div>Click Me</div>`
     }
 }
 ```
+* EventType.ROOT -> Represents the current element (attach listener to an element)
+
+```typescript
+import {Component} from "./index";
+
+import {HTML, Component, BaseElement, Property, EventListener, EventType} from "./index";
+
+export class Widget extends BaseElement {
+
+    @Propert({name: 'data'})
+    data: string;
+
+    constructor() {
+        super();
+    }
+
+    @EventListener({name: 'click', type: EventType.WINDOW})
+    handleClick() {
+        console.log('clicked')
+    }
+
+    render() {
+        return HTML`<div>Click Me</div>`
+    }
+}
+```
+* EventType.WINDOW -> Represent the window object (attach listener to the window)
 
 
 ### Inner Component Event Handling
