@@ -79,3 +79,8 @@ export interface PropertyDetails {
 export enum EventType {
     WINDOW, ROOT
 }
+
+export interface OutputDetails {
+    eventName: string
+    propertyName: string
+}
