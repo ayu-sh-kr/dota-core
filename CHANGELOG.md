@@ -1,5 +1,11 @@
 # @ayu-sh-kr/dota-core
 
+## 1.5.9
+
+### Patch Changes
+
+- 1a925d0: Refactor in the code for new changes
+
 ## 1.5.8
 
 ### Patch Changes
