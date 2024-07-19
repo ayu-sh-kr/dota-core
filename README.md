@@ -262,7 +262,7 @@ Added @Output decorator to initialize EventEmitters
 
 ```typescript
 import {AfterInit, BaseElement, Component, EventEmitter} from "./index";
-import {Output} from "./output.decorator";
+import {Event} from "./event.decorator";
 
 @Component({
     selector: 'tidy-dryers',
@@ -270,8 +270,8 @@ import {Output} from "./output.decorator";
 })
 export class TidyDryersWink extends BaseElement {
 
-    @Output()
-    color!: EventEmitter<string>
+    @Event()
+    colorChange!: EventEmitter<string>
 
     @AfterInit
     afterInit() {
