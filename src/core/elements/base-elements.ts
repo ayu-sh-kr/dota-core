@@ -61,9 +61,9 @@ export abstract class BaseElement extends HTMLElement {
         const key = `${this.constructor.name}:Before`
         const map: Map<string, Function> = Reflect.getMetadata(key, this.constructor);
 
-        const fun = map.get('beforeInit')
+        if(!map) return;
 
-        console.log(fun);
+        const fun = map.get('beforeInit')
 
         if(fun) {
             fun.apply(this);
