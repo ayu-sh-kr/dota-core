@@ -1,5 +1,11 @@
 # @ayu-sh-kr/dota-core
 
+## 1.5.11
+
+### Patch Changes
+
+- 52a3820: Fix the project export
+
 ## 1.5.10
 
 ### Patch Changes
