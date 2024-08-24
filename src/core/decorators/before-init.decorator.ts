@@ -1,18 +1,18 @@
 
 function BeforeInitDecorator(): MethodDecorator {
     return function (target: any, propertyKey: string | any, descriptor: PropertyDescriptor) {
-        const originalConnectedCallback: Function = target.connectedCallback;
-        const method: Function = descriptor.value;
-        target.connectedCallback = function () {
+        let key: string = `${target.constructor.name}:Before`;
+        let data: Map<string, Function>;
 
-            if(method) {
-                method.apply(this)
-            }
-
-            if(originalConnectedCallback) {
-                originalConnectedCallback.apply(this);
-            }
+        if(!Reflect.getMetadata(key, target.constructor)) {
+            data = new Map<string, Function>();
+            Reflect.defineMetadata(key, data, target.constructor);
         }
+
+        data = Reflect.getMetadata(key, target.constructor);
+        data.set(propertyKey.toString(), descriptor.value);
+
+        return descriptor;
     }
 }
 
