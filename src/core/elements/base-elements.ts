@@ -13,6 +13,9 @@ export abstract class BaseElement extends HTMLElement {
 
     connectedCallback() {
 
+        // handle before init
+        this.handleBeforeInit()
+
         // Expose the required method if annotated with @Expose
         this.exposeMethods();
 
@@ -21,6 +24,8 @@ export abstract class BaseElement extends HTMLElement {
 
         // Bind the events with the method of the component
         this.bindMethods();
+
+        // handle after init
     }
 
     abstract render(): string;
@@ -28,6 +33,8 @@ export abstract class BaseElement extends HTMLElement {
     attributeChangedCallback(name: string, oldValue: string, newValue: string) {
 
         let methods: MethodDetails[] = Reflect.getMetadata(this.constructor.name, this.constructor);
+
+        this.handleBeforeInit();
 
         if (newValue !== oldValue) {
 
@@ -50,7 +57,22 @@ export abstract class BaseElement extends HTMLElement {
         super.setAttribute(qualifiedName, value);
     }
 
+    handleBeforeInit() {
+        const key = `${this.constructor.name}:Before`
+        const map: Map<string, Function> = Reflect.getMetadata(key, this.constructor);
+
+        const fun = map.get('beforeInit')
+
+        console.log(fun);
+
+        if(fun) {
+            fun.apply(this);
+        }
+
+    }
+
     bindHTML() {
+
         let methods: MethodDetails[] = Reflect.getMetadata(this.constructor.name, this.constructor);
 
         this.isShadow = Reflect.getMetadata(this.constructor.name + ':' + 'shadow', this.constructor)
@@ -80,7 +102,7 @@ export abstract class BaseElement extends HTMLElement {
     bindEvents(root: HTMLElement | ShadowRoot, methods: MethodDetails[]) {
 
         const eventPattern = /@(\w+)="{(\w+)}"/g;
-        
+
         for (const match of root.innerHTML.matchAll(eventPattern)) {
             const eventName = match[1];
             const methodName = match[2];
