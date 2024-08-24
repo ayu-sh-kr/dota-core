@@ -1,5 +1,11 @@
 # @ayu-sh-kr/dota-core
 
+## 1.5.13
+
+### Patch Changes
+
+- 6dd4112: bug fix
+
 ## 1.5.12
 
 ### Patch Changes
