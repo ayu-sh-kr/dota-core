@@ -1,5 +1,13 @@
 # @ayu-sh-kr/dota-core
 
+## 1.5.12
+
+### Patch Changes
+
+- 5f30197: Fix the base element for error where attribute change override the inner html.
+
+  Redefine the @BeforeInit using reflect handle attribute change efficiently
+
 ## 1.5.11
 
 ### Patch Changes
