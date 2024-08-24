@@ -1,6 +1,6 @@
 
 
-export function AfterInit(): MethodDecorator {
+function AfterInitDecorator(): MethodDecorator {
     return function (target: any, propertyKey: string | symbol, descriptor: PropertyDescriptor) {
 
         const originalConnectedCallback: Function = target.connectedCallback;
@@ -17,3 +17,5 @@ export function AfterInit(): MethodDecorator {
         }
     }
 }
+
+export {AfterInitDecorator as AfterInit}
