@@ -1,4 +1,5 @@
-import {BindConfig, MethodDetails, PropertyDetails} from "@dota/core/types/core.types.ts";
+import {BindConfig, EventDetails, MethodDetails, PropertyDetails} from "@dota/core/types/core.types.ts";
+import {EventEmitter} from "@dota/core/utils/EventEmitter.ts";
 
 export abstract class BaseElement extends HTMLElement {
     [key: string]: any
@@ -11,45 +12,80 @@ export abstract class BaseElement extends HTMLElement {
         super();
     }
 
+    /**
+     * Lifecycle method called when the component is added to the DOM.
+     *
+     * This method performs the following tasks:
+     * 1. Executes methods annotated with \@BeforeInit decorator.
+     * 2. Exposes methods annotated with \@Expose decorator to the global scope.
+     * 3. Binds the component's HTML content and events.
+     * 4. Binds the component's internal methods to their corresponding events.
+     * 5. Binds event emitters to the component's properties.
+     *
+     * @method connectedCallback
+     */
     connectedCallback() {
 
         // handle before init
         this.handleBeforeInit()
 
-        // Expose the required method if annotated with @Expose
-        this.exposeMethods();
-
         // Bind the HTML that is render the component
         this.bindHTML()
+
+        // Expose the required method if annotated with @Expose
+        this.exposeMethods();
 
         // Bind the events with the method of the component
         this.bindMethods();
 
+        // Bind the event instance with an emitter
+        this.bindEmitter();
+
         // handle after init
+    }
+
+    disconnectedCallback() {
+        this.unbindMethods();
     }
 
     abstract render(): string;
 
-    attributeChangedCallback(name: string, oldValue: string, newValue: string) {
-
-        let methods: MethodDetails[] = Reflect.getMetadata(this.constructor.name, this.constructor);
-
-        this.handleBeforeInit();
-
-        if (newValue !== oldValue) {
-
-            this.bindProperty(name, newValue);
-
-            if (this.isShadow && this.shadowRoot) {
-                this.shadowRoot.innerHTML = this.render();
-                this.bindEvents(this.shadowRoot, methods)
-            } else {
-                this.innerHTML = this.render();
-                this.bindEvents(this, methods)
-            }
+    /**
+     * Updates the component's rendered HTML.
+     *
+     * This method re-renders the component's HTML content based on the current state.
+     * If the component uses a shadow DOM, it updates the shadow root's inner HTML.
+     * Otherwise, it updates the component's inner HTML. After updating the HTML,
+     * it re-binds the component's methods to their corresponding events.
+     *
+     * @method updateHTML
+     */
+    updateHTML() {
+        if (this.isShadow && this.shadowRoot) {
+            this.shadowRoot.innerHTML = this.render();
+        } else {
+            this.innerHTML = this.render();
         }
-
         this.bindMethods();
+    }
+
+
+    /**
+     * Called when an observed attribute changes.
+     *
+     * This method is invoked when one of the component's attributes, specified in the `observedAttributes` array, changes.
+     * It updates the component's properties and re-renders the component if the new value is different from the old value.
+     *
+     * @method attributeChangedCallback
+     * @param {string} name - The name of the attribute that changed.
+     * @param {string} oldValue - The old value of the attribute.
+     * @param {string} newValue - The new value of the attribute.
+     */
+    attributeChangedCallback(name: string, oldValue: string, newValue: string) {
+        if (newValue !== oldValue) {
+            this.bindProperty(name, newValue);
+            this.updateHTML();
+        }
     }
 
     setAttribute(qualifiedName: string, value: string) {
@@ -57,6 +93,16 @@ export abstract class BaseElement extends HTMLElement {
         super.setAttribute(qualifiedName, value);
     }
 
+    /**
+     * Executes methods annotated with \@BeforeInit decorator before the component initializes.
+     *
+     * This method retrieves metadata associated with the component's constructor
+     * to find methods marked with the \@BeforeInit decorator. It then invokes the
+     * `beforeInit` method if it exists in the metadata, allowing for any setup
+     * or initialization tasks to be performed before the component is fully initialized.
+     *
+     * @method handleBeforeInit
+     */
     handleBeforeInit() {
         const key = `${this.constructor.name}:Before`
         const map: Map<string, Function> = Reflect.getMetadata(key, this.constructor);
@@ -71,6 +117,17 @@ export abstract class BaseElement extends HTMLElement {
 
     }
 
+    /**
+     * Binds the component's HTML content and events based on metadata.
+     *
+     * This method retrieves metadata associated with the component's constructor
+     * to determine if the component should use a shadow DOM. It then sets the inner
+     * HTML of the component or its shadow root to the result of the `render` method.
+     * After setting the HTML, it binds events specified in the component's inner HTML
+     * to their corresponding methods.
+     *
+     * @method bindHTML
+     */
     bindHTML() {
 
         let methods: MethodDetails[] = Reflect.getMetadata(this.constructor.name, this.constructor);
@@ -94,10 +151,16 @@ export abstract class BaseElement extends HTMLElement {
 
 
     /**
-     * Method to bind the event starting with @ in the inner html of component.
-     * @method {Function} bindEvents
-     * @param {HTMLElement | ShadowRoot} root
-     * @param {MethodDetails[]} methods
+     * Binds events specified in the component's inner HTML to their corresponding methods.
+     *
+     * This method searches the component's inner HTML for event bindings in the format
+     * `@event="{method}"`. It then attaches event listeners to the elements matching
+     * these bindings, ensuring that the specified methods are called when the events
+     * are triggered.
+     *
+     * @method bindEvents
+     * @param {HTMLElement | ShadowRoot} root - The root element to search for event bindings.
+     * @param {MethodDetails[]} methods - An array of method details to bind to the events.
      */
     bindEvents(root: HTMLElement | ShadowRoot, methods: MethodDetails[]) {
 
@@ -118,8 +181,13 @@ export abstract class BaseElement extends HTMLElement {
     }
 
     /**
-     * Method to bind the component's internal event to its methods
-     * @method {Functional}: bindMethods
+     * Binds the component's internal events to its methods based on metadata.
+     *
+     * This method retrieves metadata associated with the component's constructor
+     * to find event binding configurations. It then binds the specified methods
+     * to the corresponding events on the elements identified by the metadata.
+     *
+     * @method bindMethods
      */
     bindMethods() {
         let key = `${this.constructor.name}:Bind`
@@ -143,8 +211,37 @@ export abstract class BaseElement extends HTMLElement {
     }
 
     /**
-     * Method to expose component methods to global scope
-     * @method {Function}: exposeMethods()
+     * Unbinds component's methods from their associated events.
+     *
+     * This method retrieves metadata associated with the component's constructor
+     * to find methods that were previously bound to events. It then removes the
+     * event listeners for these methods, effectively unbinding them.
+     *
+     * @method unbindMethods
+     */
+    unbindMethods() {
+        let key = `${this.constructor.name}:Bind`;
+        const data = this.getMetaData<Map<string, BindConfig>>(key, this.constructor);
+
+        if(!data) return;
+
+        data.forEach((config: BindConfig, method: String)=> {
+            const element = this.querySelector(config.id);
+
+            if(!element) return;
+            element.removeEventListener(config.event, () => {});
+        })
+
+    }
+
+    /**
+     * Exposes component methods to the global scope.
+     *
+     * This method retrieves metadata associated with the component's constructor
+     * to find methods marked for exposure. It then binds these methods to the global
+     * `window` object, making them accessible globally.
+     *
+     * @method exposeMethods
      */
     exposeMethods() {
         let data: Map<string, MethodDetails> = Reflect.getMetadata(`${this.constructor.name}:Exposed`, this.constructor);
@@ -162,10 +259,16 @@ export abstract class BaseElement extends HTMLElement {
 
 
     /**
-     * Called By attributeChangeCallback to bind the property with new value
-     * @method {Function}: bindProperty()
-     * @param name
-     * @param value
+     * Binds a component's property to a new value based on metadata.
+     *
+     * This method is called by `attributeChangedCallback` to update the component's
+     * properties when an attribute changes. It retrieves metadata associated with
+     * the component's constructor to find property details and assigns the new value
+     * to the corresponding property.
+     *
+     * @method bindProperty
+     * @param {string} name - The name of the attribute that changed.
+     * @param {string} value - The new value of the attribute.
      */
     bindProperty(name: string, value: string) {
 
@@ -180,6 +283,30 @@ export abstract class BaseElement extends HTMLElement {
                 this[property.prototype] = value;
             }
         }
+    }
+
+    /**
+     * Binds event emitters to the component's properties based on metadata.
+     *
+     * This method retrieves metadata associated with the component's constructor
+     * to find event details and binds an `EventEmitter` instance to each property
+     * specified in the metadata. The event name is derived from the metadata.
+     *
+     * @method bindEmitter
+     */
+    bindEmitter() {
+        const key = `${this.constructor.name}:Output`;
+        const data = this.getMetaData<Map<string, EventDetails>>(key, this.constructor);
+
+        if(!data) return;
+
+        data.forEach((value: EventDetails, key: string) => {
+            this[key] = new EventEmitter(value.eventName)
+        })
+    }
+
+    getMetaData<T>(key: string, target: any): T {
+        return Reflect.getMetadata(key, target) as T;
     }
 
 }
