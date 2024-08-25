@@ -1,5 +1,11 @@
 # @ayu-sh-kr/dota-core
 
+## 1.5.17
+
+### Patch Changes
+
+- 135ce18: Bug fix in BaseElement
+
 ## 1.5.16
 
 ### Patch Changes
