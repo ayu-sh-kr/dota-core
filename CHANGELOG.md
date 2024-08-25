@@ -1,5 +1,11 @@
 # @ayu-sh-kr/dota-core
 
+## 1.5.15
+
+### Patch Changes
+
+- 5cba398: Did code optimization for decorator, reduce repeatation and added js docs
+
 ## 1.5.14
 
 ### Patch Changes
