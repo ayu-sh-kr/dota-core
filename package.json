@@ -1,6 +1,6 @@
 {
   "name": "@ayu-sh-kr/dota-core",
-  "version": "1.5.16",
+  "version": "1.5.17",
   "description": "This is a web component support module",
   "type": "module",
   "main": "dist/index.js",
