@@ -1,5 +1,11 @@
 # @ayu-sh-kr/dota-core
 
+## 1.5.16
+
+### Patch Changes
+
+- b0aedc0: Minor bug fix for method binding
+
 ## 1.5.15
 
 ### Patch Changes
