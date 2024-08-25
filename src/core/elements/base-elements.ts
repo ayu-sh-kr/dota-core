@@ -120,7 +120,7 @@ export abstract class BaseElement extends HTMLElement {
 
         let data: Map<string, Function> = HelperUtils.fetchOrCreate<Function>(this, 'Before')
 
-        const fun = data.get('beforeInit')
+        const fun = data.get('beforeViewInit')
 
         if(fun) {
             fun.apply(this);
@@ -142,7 +142,7 @@ export abstract class BaseElement extends HTMLElement {
 
         let data: Map<string, Function> = HelperUtils.fetchOrCreate<Function>(this, 'After');
 
-        let fun = data.get('afterInit')
+        let fun = data.get('afterViewInit')
 
         if (fun) {
             fun.apply(this);
@@ -276,7 +276,8 @@ export abstract class BaseElement extends HTMLElement {
      * @method exposeMethods
      */
     exposeMethods() {
-        let data: Map<string, MethodDetails> = Reflect.getMetadata(`${this.constructor.name}:Exposed`, this.constructor);
+
+        let data = HelperUtils.fetchOrCreate<MethodDetails>(this, 'Exposed')
 
         if(data) {
             data.forEach((value, key)  => {
@@ -302,11 +303,9 @@ export abstract class BaseElement extends HTMLElement {
      * @param {string} name - The name of the attribute that changed.
      * @param {string} value - The new value of the attribute.
      */
-    bindProperty(name: string, value: string) {
+    bindProperty(name: string, value: any) {
 
-        const key = `${this.constructor.name}:Property`;
-
-        let data: Map<string, PropertyDetails> = Reflect.getMetadata(key, this.constructor);
+        let data: Map<string, PropertyDetails> = HelperUtils.fetchOrCreate<PropertyDetails>(this, 'Property')
 
         if (data) {
             let property = data.get(name);
