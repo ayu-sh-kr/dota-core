@@ -1,5 +1,6 @@
 import {BindConfig, EventDetails, MethodDetails, PropertyDetails} from "@dota/core/types/core.types.ts";
 import {EventEmitter} from "@dota/core/utils/EventEmitter.ts";
+import {HelperUtils} from "@dota/core/helper/helper.utils.ts";
 
 export abstract class BaseElement extends HTMLElement {
     [key: string]: any
@@ -16,8 +17,8 @@ export abstract class BaseElement extends HTMLElement {
      * Lifecycle method called when the component is added to the DOM.
      *
      * This method performs the following tasks:
-     * 1. Executes methods annotated with \@BeforeInit decorator.
-     * 2. Exposes methods annotated with \@Expose decorator to the global scope.
+     * 1. Executes methods annotated with `@BeforeInit` decorator.
+     * 2. Exposes methods annotated with `@Expose` decorator to the global scope.
      * 3. Binds the component's HTML content and events.
      * 4. Binds the component's internal methods to their corresponding events.
      * 5. Binds event emitters to the component's properties.
@@ -42,6 +43,7 @@ export abstract class BaseElement extends HTMLElement {
         this.bindEmitter();
 
         // handle after init
+        this.handleAfterInit();
     }
 
     disconnectedCallback() {
@@ -81,14 +83,25 @@ export abstract class BaseElement extends HTMLElement {
      * @param {string} oldValue - The old value of the attribute.
      * @param {string} newValue - The new value of the attribute.
      */
-    attributeChangedCallback(name: string, oldValue: string, newValue: string) {
+    attributeChangedCallback(name: string, oldValue: any, newValue: any) {
         if (newValue !== oldValue) {
             this.bindProperty(name, newValue);
             this.updateHTML();
         }
     }
 
-    setAttribute(qualifiedName: string, value: string) {
+    /**
+     * Sets the value of an attribute on the component and updates the corresponding property.
+     *
+     * This method overrides the default `setAttribute` method to ensure that the component's
+     * property is updated whenever an attribute is set. It assigns the provided value to the
+     * property with the same name as the attribute and then calls the superclasses `setAttribute`
+     * method to update the attribute on the DOM element.
+     *
+     * @param {number} qualifiedName - The name of the attribute to set.
+     * @param {number} value - The value to assign to the attribute.
+     */
+    setAttribute(qualifiedName: string, value: any) {
         this[qualifiedName] = value;
         super.setAttribute(qualifiedName, value);
     }
@@ -104,14 +117,34 @@ export abstract class BaseElement extends HTMLElement {
      * @method handleBeforeInit
      */
     handleBeforeInit() {
-        const key = `${this.constructor.name}:Before`
-        const map: Map<string, Function> = Reflect.getMetadata(key, this.constructor);
 
-        if(!map) return;
+        let data: Map<string, Function> = HelperUtils.fetchOrCreate<Function>(this, 'Before')
 
-        const fun = map.get('beforeInit')
+        const fun = data.get('beforeInit')
 
         if(fun) {
+            fun.apply(this);
+        }
+
+    }
+
+    /**
+     * Executes methods annotated with `@AfterInit` decorator after the component initializes.
+     *
+     * This method retrieves metadata associated with the component's constructor
+     * to find methods marked with the `@AfterInit` decorator. It then invokes the
+     * `afterInit` method if it exists in the metadata, allowing for any setup
+     * or initialization tasks to be performed after the component is fully initialized.
+     *
+     * @method handleAfterInit
+     */
+    handleAfterInit() {
+
+        let data: Map<string, Function> = HelperUtils.fetchOrCreate<Function>(this, 'After');
+
+        let fun = data.get('afterInit')
+
+        if (fun) {
             fun.apply(this);
         }
 
@@ -220,8 +253,8 @@ export abstract class BaseElement extends HTMLElement {
      * @method unbindMethods
      */
     unbindMethods() {
-        let key = `${this.constructor.name}:Bind`;
-        const data = this.getMetaData<Map<string, BindConfig>>(key, this.constructor);
+
+        const data = HelperUtils.fetchOrCreate<BindConfig>(this, 'Bind')
 
         if(!data) return;
 
@@ -295,8 +328,8 @@ export abstract class BaseElement extends HTMLElement {
      * @method bindEmitter
      */
     bindEmitter() {
-        const key = `${this.constructor.name}:Output`;
-        const data = this.getMetaData<Map<string, EventDetails>>(key, this.constructor);
+
+        let data = HelperUtils.fetchOrCreate<EventDetails>(this, 'Output')
 
         if(!data) return;
 
