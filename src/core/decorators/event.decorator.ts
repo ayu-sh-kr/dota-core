@@ -1,25 +1,22 @@
 import {EventDetails} from "@dota/core/types/core.types.ts";
+import {HelperUtils} from "@dota/core/helper/helper.utils.ts";
 
 
-export function Event(): PropertyDecorator {
+export function EventDecorator(): PropertyDecorator {
     return function (target: any, propertyKey: string | symbol) {
-        const key = `${target.constructor.name}:Output`
+
+        let data = HelperUtils.fetchOrCreate<EventDetails>(target, 'Output')
+
         const event = `on${capitalize(propertyKey.toString())}`
-        if (!Reflect.hasMetadata(key, target)) {
-            console.log('No data')
-            const data = new Map<string, EventDetails>()
-            Reflect.defineMetadata(key, data, target.constructor);
-        }
 
         const details: EventDetails = {eventName: event, propertyName: propertyKey.toString()}
 
-        const data: Map<string, EventDetails> = Reflect.getMetadata(key, target.constructor);
-        if (data) {
-            data.set(propertyKey.toString(), details);
-        }
+        data.set(propertyKey.toString(), details);
     }
 }
 
 export function capitalize(str: string): string {
     return str.charAt(0).toUpperCase() + str.slice(1);
 }
+
+export {EventDecorator as Event}

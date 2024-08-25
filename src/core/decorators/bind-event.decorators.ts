@@ -1,17 +1,11 @@
 import {BindConfig} from "@dota/core/types/core.types.ts";
+import {HelperUtils} from "@dota/core/helper/helper.utils.ts";
 
 
 export function BindEvent(config: BindConfig): MethodDecorator {
     return function (target: any, propertyKey: string | symbol, descriptor: PropertyDescriptor) {
-        let key: string = `${target.constructor.name}:Bind`;
-        let data: Map<string, BindConfig>;
 
-        if(!Reflect.getMetadata(key, target.constructor)) {
-            data = new Map<string, BindConfig>();
-            Reflect.defineMetadata(key, data, target.constructor);
-        }
-
-        data = Reflect.getMetadata(key, target.constructor);
+        let data = HelperUtils.fetchOrCreate<BindConfig>(target, 'Bind');
         data.set(propertyKey.toString(), config);
 
         return descriptor;

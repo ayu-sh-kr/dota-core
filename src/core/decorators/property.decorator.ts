@@ -1,4 +1,5 @@
 import {PropertyConfig, PropertyDetails} from "@dota/core/types/core.types.ts";
+import {HelperUtils} from "@dota/core/helper/helper.utils.ts";
 
 
 export function Property(config: PropertyConfig): PropertyDecorator{
@@ -8,18 +9,10 @@ export function Property(config: PropertyConfig): PropertyDecorator{
             target.constructor.observedAttributes = [];
         }
 
-        target.constructor.observedAttributes.push(config.name)
+        target.constructor.observedAttributes.push(config.name);
 
-        const key = `${target.constructor.name}:Property`
+        let data = HelperUtils.fetchOrCreate<PropertyDetails>(target, 'Property');
 
-        let data!: Map<string, PropertyDetails>;
-
-        if(!Reflect.getMetadata(key, target.constructor)) {
-            data = new Map();
-            Reflect.defineMetadata(key, data, target.constructor);
-        }
-
-        data = Reflect.getMetadata(key, target.constructor);
         data.set(
             config.name,
             {name: config.name, prototype: propertyKey.toString(), default: config.default}
