@@ -1,5 +1,12 @@
 # @ayu-sh-kr/dota-core
 
+## 1.5.14
+
+### Patch Changes
+
+- 332d504: issue fix for shadow root component
+- 321fee2: Update BaseElement mix bug for un-initialized event emitters decorated with @Event
+
 ## 1.5.13
 
 ### Patch Changes
