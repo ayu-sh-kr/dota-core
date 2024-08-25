@@ -194,7 +194,7 @@ export abstract class BaseElement extends HTMLElement {
         let data: Map<string, BindConfig> = Reflect.getMetadata(key, this.constructor);
         if(data) {
             data.forEach((config, methodName) => {
-                const element = this.querySelector(config.id);
+                const element = this.isShadow ? this.shadowRoot.querySelector(config.id) : this.querySelector(config.id);
                 if (element) {
                     const method = this[methodName];
                     if (config.params) {
