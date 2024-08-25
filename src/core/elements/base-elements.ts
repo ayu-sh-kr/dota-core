@@ -223,8 +223,7 @@ export abstract class BaseElement extends HTMLElement {
      * @method bindMethods
      */
     bindMethods() {
-        let key = `${this.constructor.name}:Bind`
-        let data: Map<string, BindConfig> = Reflect.getMetadata(key, this.constructor);
+        let data = HelperUtils.fetchOrCreate<BindConfig>(this, 'Bind');
         if(data) {
             data.forEach((config, methodName) => {
                 const element = this.isShadow ? this.shadowRoot.querySelector(config.id) : this.querySelector(config.id);
