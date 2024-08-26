@@ -1,4 +1,5 @@
 import "reflect-metadata";
+import {PropertyDetails} from "@dota/core/types/core.types.ts";
 
 export class HelperUtils {
 
@@ -28,6 +29,51 @@ export class HelperUtils {
         data = Reflect.getMetadata(key, target);
 
         return data;
+    }
+
+    /**
+     * Binds reactive properties to an element based on metadata.
+     *
+     * This function retrieves metadata associated with the element to find property details.
+     * It then defines getter and setter methods for each property to enable reactivity.
+     * When a property is set, the element's `updateHTML` method is called to re-render the component.
+     *
+     * @function bindReactive
+     * @param {any} element - The element to bind reactive properties to.
+     *
+     * @example
+     * // Assuming `element` is an instance of a class that extends `BaseElement`
+     * bindReactive(element);
+     *
+     * // Now, when a property defined in the metadata is set, the element's `updateHTML` method will be called.
+     * element.someProperty = 'newValue'; // This will trigger element.updateHTML()
+     */
+    static bindReactive(element: any ){
+        let data = HelperUtils.fetchOrCreate<PropertyDetails>(element, 'Property');
+
+        data.forEach((value: PropertyDetails) => {
+
+            const propertyKey = `_${value.prototype}`
+
+            Object.defineProperty(element, value.prototype, {
+                get(): any {
+                    return element[propertyKey]
+                },
+
+                set(v: any) {
+
+                    if(element[propertyKey] !== v) {
+                        element[propertyKey] = v;
+                        element.updateHTML();
+                    }
+                },
+
+                enumerable: true,
+                configurable: true
+            });
+        });
+
+        element.reactive = true;
     }
 
 }
