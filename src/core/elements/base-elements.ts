@@ -7,7 +7,9 @@ export abstract class BaseElement extends HTMLElement {
 
     isShadow!: boolean;
 
-    shadowRoot!: ShadowRoot
+    shadowRoot!: ShadowRoot;
+
+    reactive = false;
 
     protected constructor() {
         super();
@@ -84,6 +86,11 @@ export abstract class BaseElement extends HTMLElement {
      * @param {string} newValue - The new value of the attribute.
      */
     attributeChangedCallback(name: string, oldValue: any, newValue: any) {
+
+        if(!this.reactive) {
+            HelperUtils.bindReactive(this);
+        }
+
         if (newValue !== oldValue) {
             this.bindProperty(name, newValue);
             this.updateHTML();
@@ -102,15 +109,14 @@ export abstract class BaseElement extends HTMLElement {
      * @param {number} value - The value to assign to the attribute.
      */
     setAttribute(qualifiedName: string, value: any) {
-        this[qualifiedName] = value;
         super.setAttribute(qualifiedName, value);
     }
 
     /**
-     * Executes methods annotated with \@BeforeInit decorator before the component initializes.
+     * Executes methods annotated with `@BeforeInit` decorator before the component initializes.
      *
      * This method retrieves metadata associated with the component's constructor
-     * to find methods marked with the \@BeforeInit decorator. It then invokes the
+     * to find methods marked with the `@BeforeInit` decorator. It then invokes the
      * `beforeInit` method if it exists in the metadata, allowing for any setup
      * or initialization tasks to be performed before the component is fully initialized.
      *
@@ -151,7 +157,7 @@ export abstract class BaseElement extends HTMLElement {
     }
 
     /**
-     * Binds the component's HTML content and events based on metadata.
+     * Binds the component's `HTML` content and events based on metadata.
      *
      * This method retrieves metadata associated with the component's constructor
      * to determine if the component should use a shadow DOM. It then sets the inner
@@ -334,10 +340,6 @@ export abstract class BaseElement extends HTMLElement {
         data.forEach((value: EventDetails, key: string) => {
             this[key] = new EventEmitter(value.eventName)
         })
-    }
-
-    getMetaData<T>(key: string, target: any): T {
-        return Reflect.getMetadata(key, target) as T;
     }
 
 }
