@@ -64,7 +64,7 @@ export class HelperUtils {
 
                     if(element[propertyKey] !== v) {
                         element[propertyKey] = v;
-                        element.updateHTML();
+                        element.setAttribute(value.name, v);
                     }
                 },
 
