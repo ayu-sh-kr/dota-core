@@ -1,5 +1,11 @@
 # @ayu-sh-kr/dota-core
 
+## 1.6.1
+
+### Patch Changes
+
+- 197982b: Update the property reactivity to update dom too
+
 ## 1.6.0
 
 ### Minor Changes
