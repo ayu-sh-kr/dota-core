@@ -36,5 +36,7 @@ export function Component(config: ComponentConfig) {
         }
 
         Reflect.defineMetadata(target.name + ':' + 'shadow', config.shadow, target);
+
+        Reflect.defineMetadata('Component', config, target);
     }
 }
