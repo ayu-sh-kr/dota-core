@@ -1,9 +1,15 @@
 ### DOTA CORE
+Started **dota-core** as college project for creating a common API for creating web components and just automate bunch of things using decorators.
+Major concern was to automate the re-rendering of the component upon the change in the attribute, providing event listeners and a way write components
+that just looks clean.
+
 * Templating Library for Web Components
 * Provides decorators based support for Web Components
+* Automatic re-rendering of components.
+* Attribute-Property binding.
 
 ```typescript
-import {HTML, Component, BaseElement, Property, EventListener, EventType} from "./index";
+import {HTML, Component, BaseElement, Property, EventListener, EventType} from "@ayu-sh-kr/dota-core/dist";
 
 export class Widget extends BaseElement {
 
@@ -27,9 +33,7 @@ export class Widget extends BaseElement {
 * EventType.ROOT -> Represents the current element (attach listener to an element)
 
 ```typescript
-import {Component} from "./index";
-
-import {HTML, Component, BaseElement, Property, EventListener, EventType} from "./index";
+import {Component, HTML, Component, BaseElement, Property, EventListener, EventType} from "@ayu-sh-kr/dota-core/dist";
 
 export class Widget extends BaseElement {
 
@@ -56,8 +60,7 @@ export class Widget extends BaseElement {
 ### Inner Component Event Handling
 
 ```typescript
-import {BaseElement} from "./base-elements";
-import {HTML} from "./html.render";
+import {BaseElement, HTML} from "@ayu-sh-kr/dota-core/dist";
 
 export class ColorTextComponent extends BaseElement {
     
@@ -129,8 +132,7 @@ Process of Binding Events on Element to the Class Method, fallback feature till 
 template rendering available
 
 ```typescript
-import {BaseElement, Component, HTML, Property} from "./index";
-import {BindEvent} from "./bind-event.decorators";
+import {BaseElement, Component, HTML, Property, BindEvent} from "@ayu-sh-kr/dota-core/dist";
 
 @Component({
     selecter: 'text-component',
@@ -203,8 +205,7 @@ export class TextComponent extends BaseElement {
 ### Add Code and Changes After View is Rendered
 
 ```typescript
-import {BaseElement, Component, HTML} from "./index";
-import {AfterInit} from "./after-init.decorator";
+import {BaseElement, Component, HTML, AfterInit} from "@ayu-sh-kr/dota-core/dist";
 
 @Component({
     selector: 'neat-pots',
@@ -217,7 +218,7 @@ export class NeatPotsBeam extends BaseElement {
     }
 
     @AfterInit()
-    afterInit() {
+    afterViewInit() {
         console.log('Run After View is Rendered');
     }
 
@@ -233,8 +234,7 @@ export class NeatPotsBeam extends BaseElement {
 ### EventEmitter
 
 ```typescript
-import {BaseElement, BindEvent, Component, Property} from "./index";
-import {EventEmitter} from "./EventEmitter";
+import {BaseElement, BindEvent, Component, Property, EventEmitter} from "@ayu-sh-kr/dota-core/dist";
 
 @Component({
     selecter: 'brave-seas',
@@ -257,12 +257,11 @@ export class BraveSeasProve extends BaseElement {
     }
 }
 ```
-### @Output Annotation
-Added @Output decorator to initialize EventEmitters
+### @Event Annotation
+Added **@Event** decorator to initialize EventEmitters
 
 ```typescript
-import {AfterInit, BaseElement, Component, EventEmitter} from "./index";
-import {Event} from "./event.decorator";
+import {AfterInit, BaseElement, Component, EventEmitter, Event} from "@ayu-sh-kr/dota-core/dist";
 
 @Component({
     selector: 'tidy-dryers',
@@ -274,7 +273,7 @@ export class TidyDryersWink extends BaseElement {
     colorChange!: EventEmitter<string>
 
     @AfterInit
-    afterInit() {
+    afterViewInit() {
         this.color.emit('data', this)
     }
     
@@ -285,8 +284,8 @@ export class TidyDryersWink extends BaseElement {
 ```
 
 ```typescript
-import {BaseElement, Component, EventListener, HTML} from "./index";
-import {EventType} from "./core.types";
+import {BaseElement, Component, EventListener, HTML} from "@ayu-sh-kr/dota-core/dist";
+import type {EventType} from "@ayu-sh-kr/dota-core/dist";
 
 @Component({
     selector: 'listener-component',
@@ -313,7 +312,7 @@ export class ListenerComponent extends BaseElement {
 It is used to do something before rendering the component, you can access the inner html of your custom component and assign it to itself
 
 ```typescript
-import {Component, BaseElement, BeforeInit} from "./index";
+import {Component, BaseElement, BeforeInit} from "@ayu-sh-kr/dota-core/dist";
 
 @Component({
     selector: 'app-scaffold',
@@ -321,8 +320,8 @@ import {Component, BaseElement, BeforeInit} from "./index";
 })
 export class ScaffoldComponent extends BaseElement {
 
-    @AfterInit()
-    afterInit() {
+    @BeforeInit()
+    beforeViewInit() { // function name must be the beforeViewInit
     }
 
     render(): string {
@@ -330,11 +329,7 @@ export class ScaffoldComponent extends BaseElement {
             <div class="scaffold">
                 <slot/>
             </div>
-            <style>
-                @tailwind base;
-                @tailwind utilities;
-                @tailwind components;
-                 
+            <style> 
                  .scaffold {
                     display: flex;
                     justify-content: center;
@@ -356,8 +351,7 @@ Update project -> Automate reactivity for change in the property value by updati
 With reactivity dom gets update each time a property marked as **@Property** gets its value changed.
 
 ```typescript HTML
-import {BaseElement} from "./base-elements";
-import {BindEvent, Component, Property} from "./app.decorator";
+import {BindEvent, Component, Property, BaseElement} from "@ayu-sh-kr/dota-core/dist";
 
 @Component({
     selector: 'app-counter',
@@ -385,4 +379,18 @@ export class CounterComponent extends BaseElement {
 
 ```HTML
 <app-count count="0"></app-count>
+```
+
+
+## Initializing Components
+Use the bootstrap function to initialize all the required component
+
+```typescript
+import {bootstrap} from "@ayu-sh-kr/dota-core/dist";
+import {ButtonComponent, ScaffoldComponent} from "./components";
+
+bootstrap([
+    ButtonComponent,
+    ScaffoldComponent,
+])
 ```
