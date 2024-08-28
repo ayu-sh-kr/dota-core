@@ -76,4 +76,19 @@ export class HelperUtils {
         element.reactive = true;
     }
 
+
+    /**
+     * Extracts metadata for a given decorator from a class.
+     *
+     * @param {Function} targetClass - The class from which to extract metadata.
+     * @param {string} decoratorName - The name of the decorator.
+     * @returns {any} - The metadata associated with the specified decorator.
+     */
+    static getComponentMetadata(targetClass: Object, decoratorName: string): any {
+        if(Reflect.hasOwnMetadata(decoratorName, targetClass)) {
+            console.log(true)
+        }
+        return Reflect.getOwnMetadata(decoratorName, targetClass);
+    }
+
 }
