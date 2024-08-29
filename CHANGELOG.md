@@ -1,5 +1,11 @@
 # @ayu-sh-kr/dota-core
 
+## 1.6.2
+
+### Patch Changes
+
+- 6cc3635: Added method bootstrap to initialize components, by passing them as an array to the function argument
+
 ## 1.6.1
 
 ### Patch Changes
