@@ -1,5 +1,29 @@
 # @ayu-sh-kr/dota-core
 
+## 1.6.3
+
+### Patch Changes
+
+- 4ca57ee: Added Type Sanitization for the Property types
+
+  ```typescript
+  export class TestComponent extends BaseElement {
+    @Property({
+      name: "data",
+      type: NumberType,
+    })
+    data!: number;
+
+    constructor() {
+      super();
+    }
+
+    render() {
+      return ``;
+    }
+  }
+  ```
+
 ## 1.6.2
 
 ### Patch Changes
