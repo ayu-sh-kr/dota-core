@@ -15,7 +15,7 @@ export function Property(config: PropertyConfig): PropertyDecorator{
 
         data.set(
             config.name,
-            {name: config.name, prototype: propertyKey.toString(), default: config.default}
+            {name: config.name, prototype: propertyKey.toString(), default: config.default, type: config.type}
         )
     }
 }
