@@ -10,10 +10,11 @@ that just looks clean.
 
 ```typescript
 import {HTML, Component, BaseElement, Property, EventListener, EventType} from "@ayu-sh-kr/dota-core/dist";
+import {StringType} from "./property.types";
 
 export class Widget extends BaseElement {
 
-    @Propert({name: 'data'})
+    @Propert({name: 'data', type: StringType})
     data: string;
 
     constructor() {
@@ -34,10 +35,11 @@ export class Widget extends BaseElement {
 
 ```typescript
 import {Component, HTML, Component, BaseElement, Property, EventListener, EventType} from "@ayu-sh-kr/dota-core/dist";
+import {StringType} from "./property.types";
 
 export class Widget extends BaseElement {
 
-    @Propert({name: 'data'})
+    @Propert({name: 'data', type: StringType})
     data: string;
 
     constructor() {
@@ -80,27 +82,29 @@ export class ColorTextComponent extends BaseElement {
 ### Exposing Class Methods to Global Namespace
 
 ```typescript
+import {BooleanType, StringType} from "./property.types";
+
 @Component({
     selector: 'color-text',
     shadow: false
 })
 export class ColoredTextComponent extends BaseElement {
 
-    @Property({name: 'text'})
+    @Property({name: 'text', type: StringType})
     text!: string
 
-    @Property({name: 'color'})
+    @Property({name: 'color', type: StringType})
     color!: string
 
-    @Property({name: 'bold'})
+    @Property({name: 'bold', type: BooleanType})
     bold!: boolean
 
     colorSet = ['text-purple-400', 'text-yellow-400', 'text-emerald-400']
-    
+
     constructor() {
         super();
     }
-    
+
     @Expose()
     changeColor() {
         const randomIndex = Math.floor(Math.random() * this.colorSet.length);
@@ -133,6 +137,7 @@ template rendering available
 
 ```typescript
 import {BaseElement, Component, HTML, Property, BindEvent} from "@ayu-sh-kr/dota-core/dist";
+import {StringType} from "./property.types";
 
 @Component({
     selecter: 'text-component',
@@ -140,7 +145,7 @@ import {BaseElement, Component, HTML, Property, BindEvent} from "@ayu-sh-kr/dota
 })
 export class TextComponent extends BaseElement {
 
-    @Property({name: 'text'})
+    @Property({name: 'text', type: StringType})
     text!: string
 
     @BindEvent({event: 'click', id: '#clr12'})
@@ -157,16 +162,18 @@ export class TextComponent extends BaseElement {
 ```
 
 ### Property Binding
+
 ```typescript
+import {StringType} from "./property.types";
 
 @Component({
     selector: 'text-component'
 })
 export class TextComponent extends BaseElement {
-    
-    @Property({name: 'text'})
+
+    @Property({name: 'text', type: StringType})
     text!: string;
-    
+
     render() {
         return HTML`
         <div>${this.text}</div>
@@ -182,12 +189,14 @@ export class TextComponent extends BaseElement {
 Now if we want the attribute name to be different
 
 ```typescript
+import {StringType} from "./property.types";
+
 @Component({
     selector: 'text-component'
 })
 export class TextComponent extends BaseElement {
 
-    @Property({name: 'data'})
+    @Property({name: 'data', type: StringType})
     text!: string;
 
     render() {
@@ -235,6 +244,7 @@ export class NeatPotsBeam extends BaseElement {
 
 ```typescript
 import {BaseElement, BindEvent, Component, Property, EventEmitter} from "@ayu-sh-kr/dota-core/dist";
+import {StringType} from "./property.types";
 
 @Component({
     selecter: 'brave-seas',
@@ -242,7 +252,7 @@ import {BaseElement, BindEvent, Component, Property, EventEmitter} from "@ayu-sh
 })
 export class BraveSeasProve extends BaseElement {
 
-    @Property({name: 'data'})
+    @Property({name: 'data', type: StringType})
     data!: string
 
     dataChange = new EventEmitter<string>('data-change')
@@ -352,6 +362,7 @@ With reactivity dom gets update each time a property marked as **@Property** get
 
 ```typescript HTML
 import {BindEvent, Component, Property, BaseElement} from "@ayu-sh-kr/dota-core/dist";
+import {NumberType} from "./property.types";
 
 @Component({
     selector: 'app-counter',
@@ -359,7 +370,7 @@ import {BindEvent, Component, Property, BaseElement} from "@ayu-sh-kr/dota-core/
 })
 export class CounterComponent extends BaseElement {
 
-    @Property({name: 'count'})
+    @Property({name: 'count', type: NumberType})
     count!: number;
 
     @BindEvent({event: 'click', id: '#button'})
