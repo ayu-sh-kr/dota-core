@@ -1,5 +1,3 @@
-
-
 /**
  * Configuration object for the Component decorator.
  *  @type {Object} ComponentConfig
@@ -8,6 +6,8 @@
  *  Determines whether the component should use a shadow root.
  *  Defaults to false.
  */
+import {PropertyType} from "@dota/core/types/property.types.ts";
+
 
 export interface ComponentConfig {
     selector: string;
@@ -48,7 +48,8 @@ export interface BindConfig {
  */
 export interface PropertyConfig {
     name: string;
-    default?: string
+    default?: string;
+    type: PropertyType<any>
 }
 
 
@@ -73,7 +74,8 @@ export interface EventConfig {
 export interface PropertyDetails {
     name: string
     prototype: string
-    default?: any
+    default?: any,
+    type: PropertyType<any>
 }
 
 export enum EventType {
