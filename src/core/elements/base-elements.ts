@@ -1,6 +1,7 @@
 import {BindConfig, EventDetails, MethodDetails, PropertyDetails} from "@dota/core/types/core.types.ts";
 import {EventEmitter} from "@dota/core/utils/EventEmitter.ts";
 import {HelperUtils} from "@dota/core/helper/helper.utils.ts";
+import {Sanitizer} from "@dota/core/utils/sanitizer.util.ts";
 
 export abstract class BaseElement extends HTMLElement {
     [key: string]: any
@@ -87,8 +88,12 @@ export abstract class BaseElement extends HTMLElement {
      */
     attributeChangedCallback(name: string, oldValue: any, newValue: any) {
 
-        if(!this.reactive) {
+        if (!this.reactive) {
             HelperUtils.bindReactive(this);
+        }
+
+        if(!newValue) {
+            return;
         }
 
         if (newValue !== oldValue) {
@@ -317,7 +322,8 @@ export abstract class BaseElement extends HTMLElement {
             let property = data.get(name);
 
             if(property) {
-                this[property.prototype] = value;
+                this[property.prototype] = Sanitizer.sanitize(value, property.type);
+                return;
             }
         }
     }
