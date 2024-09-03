@@ -1,5 +1,11 @@
 # @ayu-sh-kr/dota-core
 
+## 1.6.4
+
+### Patch Changes
+
+- 35adbc0: Bug fix for BooleanType -> fix issue where boolean conversion was failing for 'false'
+
 ## 1.6.3
 
 ### Patch Changes
