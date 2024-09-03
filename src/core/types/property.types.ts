@@ -140,7 +140,12 @@ export const NumberType: PropertyType<number> = {
 export const BooleanType: PropertyType<boolean> = {
     process: (value: any) => {
         try {
-            return Boolean(value);
+            if(value === "false") {
+                return false;
+            } else if(value === "true") {
+                return true;
+            }
+            throw new Error(`Not a boolean type -> value: ${value}`);
         }catch (e) {
             throw new Error(`Value is not of type boolean: ${value}`)
         }
