@@ -1,5 +1,11 @@
 # @ayu-sh-kr/dota-core
 
+## 1.6.7
+
+### Patch Changes
+
+- b99ea58: Fix package.json vite issue
+
 ## 1.6.6
 
 ### Patch Changes
