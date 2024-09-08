@@ -1,7 +1,7 @@
 {
   "name": "@ayu-sh-kr/dota-core",
   "version": "1.6.4",
-  "description": "This is a web component support module",
+  "description": "@ayu-sh-kr/dota-core is a comprehensive web component support module designed to facilitate the development of web components using TypeScript. This library provides decorators and utilities that simplify the creation, management, and usage of web components, ensuring a streamlined and efficient development process.",
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
