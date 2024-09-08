@@ -1,5 +1,11 @@
 # @ayu-sh-kr/dota-core
 
+## 1.6.6
+
+### Patch Changes
+
+- ae9553b: New release using vite-build
+
 ## 1.6.5
 
 ### Patch Changes
