@@ -67,7 +67,7 @@ export type PropertyType<T> = {
  *     console.error(e.message); // Output: Value is not of type string: undefined
  * }
  */
-export const StringType: PropertyType<string> = {
+const StringType: PropertyType<string> = {
     process: (value: any) => {
         try {
             return String(value)
@@ -102,7 +102,7 @@ export const StringType: PropertyType<string> = {
  *     console.error(e.message); // Output: Value is not of type number: abc
  * }
  */
-export const NumberType: PropertyType<number> = {
+const NumberType: PropertyType<number> = {
     process: (value: any) => {
         try {
             return Number(value);
@@ -137,7 +137,7 @@ export const NumberType: PropertyType<number> = {
  *     console.error(e.message); // Output: Value is not of type boolean: notABoolean
  * }
  */
-export const BooleanType: PropertyType<boolean> = {
+const BooleanType: PropertyType<boolean> = {
     process: (value: any) => {
         try {
             if(value === "false") {
@@ -161,6 +161,10 @@ export const BooleanType: PropertyType<boolean> = {
  *
  * @template T - The type of the object to which the value will be processed.
  *
+ * @type {PropertyType<object>}
+ *
+ * @property {function(any): object} process - A method that takes any value and converts it to an object of type `T`.
+ *
  * @throws {Error} If the value cannot be converted to an object of type `T`.
  *
  * @example
@@ -181,12 +185,14 @@ export const BooleanType: PropertyType<boolean> = {
  *     console.error(e.message); // Output: Value is not of given type: invalid JSON string
  * }
  */
-export const ObjectType = <T>(): PropertyType<T> => ({
+const ObjectType: PropertyType<object> = {
     process: (value: any) => {
         try {
-            return JSON.parse(value) as T;
+            return Object(JSON.parse(value))
         }catch (e) {
             throw new Error(`Value is not of given type: ${value}`)
         }
     }
-})
+}
+
+export {StringType as String, NumberType as Number, BooleanType as Boolean, ObjectType as Object}
