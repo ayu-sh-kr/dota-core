@@ -1,5 +1,11 @@
 # @ayu-sh-kr/dota-core
 
+## 1.6.5
+
+### Patch Changes
+
+- 61136d4: Update build tool -> added vite, rename import from property type
+
 ## 1.6.4
 
 ### Patch Changes
