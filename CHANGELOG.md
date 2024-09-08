@@ -1,5 +1,11 @@
 # @ayu-sh-kr/dota-core
 
+## 1.6.8
+
+### Patch Changes
+
+- 5bc063b: Rolling back to tsup as build tool
+
 ## 1.6.7
 
 ### Patch Changes
