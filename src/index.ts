@@ -3,3 +3,7 @@ export {HTML} from "@dota/core/render/html.render.ts";
 export * from "@dota/core/types/core.types.ts";
 export {BaseElement} from "@dota/core/elements/base-elements.ts";
 export {EventEmitter} from "@dota/core/utils/EventEmitter.ts";
+export * from "@dota/core/types/property.types.ts";
+export * from "@dota/core/helper/bootstrap.utils.ts";
+export * from "@dota/core/helper/helper.utils.ts";
+export * from "@dota/core/utils/sanitizer.util.ts";
