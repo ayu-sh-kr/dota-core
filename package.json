@@ -13,7 +13,7 @@
     "build": "tsup src/**/*.ts --format esm --dts",
     "vite-build": "tsc && vite build",
     "lint": "tsc",
-    "release": "pnpm run vite-build && changeset publish"
+    "release": "pnpm run build && changeset publish"
   },
   "keywords": [
     "Typescript",
