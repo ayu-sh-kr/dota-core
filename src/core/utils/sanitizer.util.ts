@@ -1,4 +1,4 @@
-import {PropertyType} from "@dota/core/types/property.types.ts";
+import {PropertyType} from "@dota/core/types";
 
 
 export class Sanitizer {
