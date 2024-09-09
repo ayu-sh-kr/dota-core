@@ -1,5 +1,5 @@
 import "reflect-metadata";
-import {PropertyDetails} from "@dota/core/types/core.types.ts";
+import {PropertyDetails} from "@dota/core/types";
 
 export class HelperUtils {
 
