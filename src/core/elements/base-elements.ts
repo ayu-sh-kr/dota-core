@@ -1,7 +1,7 @@
-import {BindConfig, EventDetails, MethodDetails, PropertyDetails} from "@dota/core/types/core.types.ts";
-import {EventEmitter} from "@dota/core/utils/EventEmitter.ts";
-import {HelperUtils} from "@dota/core/helper/helper.utils.ts";
-import {Sanitizer} from "@dota/core/utils/sanitizer.util.ts";
+import {HelperUtils} from "@dota/core/helper";
+import {BindConfig, EventDetails, MethodDetails, PropertyDetails} from "@dota/core/types";
+import {EventEmitter, Sanitizer} from "@dota/core/utils";
+
 
 export abstract class BaseElement extends HTMLElement {
     [key: string]: any

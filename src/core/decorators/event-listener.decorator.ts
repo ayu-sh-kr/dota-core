@@ -1,7 +1,32 @@
-import {EventConfig, EventType} from "@dota/core/types/core.types.ts";
+import {EventConfig, EventType} from "@dota/core/types";
 
 
-export function EventListener(config: EventConfig): MethodDecorator {
+/**
+ * A method decorator that adds event listeners to a custom element.
+ *
+ * The `EventListenerDecorator` function is used to add event listeners to a custom element.
+ * It supports adding listeners to either the global window object or the element itself.
+ * The decorator ensures that the event listeners are properly added and removed when the element
+ * is connected to or disconnected from the DOM.
+ *
+ * @param {EventConfig} config - The configuration object for the event listener.
+ * @returns {MethodDecorator} - A method decorator function.
+ *
+ * @example
+ * // Example of using EventListenerDecorator to add an event listener to a custom element
+ * class MyElement extends HTMLElement {
+ *   \@EventListenerDecorator({ name: 'click', type: EventType.ROOT })
+ *   public handleClick(event: Event) {
+ *     console.log('Element clicked', event);
+ *   }
+ * }
+ *
+ * // The event listener is now added to the element
+ * const element = new MyElement();
+ * document.body.appendChild(element);
+ * // Clicking the element will trigger the handleClick method
+ */
+function EventListenerDecorator(config: EventConfig): MethodDecorator {
 
     return function (target: any, propertyKey: string | symbol, descriptor: PropertyDescriptor) {
         const originalConnectedCallback: Function = target.connectedCallback;
@@ -36,3 +61,5 @@ export function EventListener(config: EventConfig): MethodDecorator {
         return descriptor;
     }
 }
+
+export {EventListenerDecorator as EventListener}
