@@ -11,6 +11,7 @@
   ],
   "scripts": {
     "build": "tsup src/**/*.ts --format esm --dts",
+    "chunkless-build": "tsup src/index.ts --format esm --dts",
     "vite-build": "tsc && vite build",
     "lint": "tsc",
     "release": "pnpm run build && changeset publish"
