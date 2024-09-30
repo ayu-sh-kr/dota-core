@@ -224,5 +224,55 @@ interface EventDetails {
     propertyName: string;
 }
 
-export type {EventDetails, MethodDetails, PropertyDetails, PropertyConfig, ComponentConfig, BindConfig, EventConfig}
+
+/**
+ * Configuration options for binding an event to a method.
+ *
+ * This interface defines the structure of the options object used to specify
+ * the event type when binding an event to a method using decorators like `HostListener`.
+ *
+ * @interface EventOptions
+ *
+ * @property {string} event - The type of the event to bind to the method (e.g., 'click', 'mouseover').
+ *
+ * @example
+ * // Example of using EventOptions with HostListenerDecorator
+ * class MyComponent {
+ *   \@HostListener({ event: 'click' })
+ *   public handleClick(event: Event) {
+ *     console.log('Host element clicked', event);
+ *   }
+ * }
+ */
+interface EventOptions {
+    event: string
+}
+
+
+/**
+ * Configuration options for binding an event to a method.
+ *
+ * This interface defines the structure of the options object used to specify
+ * the event type when binding an event to a method using decorators like `HostListener`.
+ *
+ * @interface EventOptions
+ *
+ * @property {string} event - The type of the event to bind to the method (e.g., 'click', 'mouseover').
+ *
+ * @example
+ * // Example of using EventOptions with HostListenerDecorator
+ * class MyComponent {
+ *   \@HostListener({ event: 'click' })
+ *   public handleClick(event: Event) {
+ *     console.log('Host element clicked', event);
+ *   }
+ * }
+ */
+interface HostEventMeta {
+    event: string,
+    name: string
+    method: Function
+}
+
+export type {EventDetails, MethodDetails, PropertyDetails, PropertyConfig, ComponentConfig, BindConfig, EventConfig, EventOptions, HostEventMeta}
 export {EventType}
