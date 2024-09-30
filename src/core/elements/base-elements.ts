@@ -1,5 +1,5 @@
 import {HelperUtils} from "@dota/core/helper";
-import {BindConfig, EventDetails, MethodDetails, PropertyDetails} from "@dota/core/types";
+import {BindConfig, EventDetails, HostEventMeta, MethodDetails, PropertyDetails} from "@dota/core/types";
 import {EventEmitter, Sanitizer} from "@dota/core/utils";
 
 
@@ -25,7 +25,8 @@ export abstract class BaseElement extends HTMLElement {
      * 3. Binds the component's HTML content and events.
      * 4. Binds the component's internal methods to their corresponding events.
      * 5. Binds event emitters to the component's properties.
-     *
+     * 6. Binds the event related to host to its internal methods.
+     * 7. Executed methods annotated with `@AfterInit`
      * @method connectedCallback
      */
     connectedCallback() {
@@ -44,6 +45,9 @@ export abstract class BaseElement extends HTMLElement {
 
         // Bind the event instance with an emitter
         this.bindEmitter();
+
+        // Bind the events on the Host with internal method
+        this.bindHostEvents();
 
         // handle after init
         this.handleAfterInit();
@@ -268,7 +272,7 @@ export abstract class BaseElement extends HTMLElement {
 
         if(!data) return;
 
-        data.forEach((config: BindConfig, method: String)=> {
+        data.forEach((config: BindConfig)=> {
             const element = this.querySelector(config.id);
 
             if(!element) return;
@@ -345,6 +349,44 @@ export abstract class BaseElement extends HTMLElement {
 
         data.forEach((value: EventDetails, key: string) => {
             this[key] = new EventEmitter(value.eventName)
+        })
+    }
+
+
+    /**
+     * Binds host events to the component's methods based on metadata.
+     *
+     * This method retrieves metadata associated with the component's constructor
+     * to find host event configurations. It then binds the specified methods
+     * to the corresponding events on the host element or its shadow root.
+     *
+     * @method bindHostEvents
+     *
+     * @example
+     * // Example of using bindHostEvents to bind host events
+     * class MyComponent extends BaseElement {
+     *   \@HostListener({ event: 'click' })
+     *   public handleClick(event: Event) {
+     *     console.log('Host element clicked', event);
+     *   }
+     * }
+     *
+     * const myComponent = new MyComponent();
+     * myComponent.bindHostEvents();
+     * // The click event on the host element will now trigger the handleClick method
+     */
+    bindHostEvents() {
+        const data = HelperUtils.fetchOrCreate<HostEventMeta>(this, 'Host');
+
+        if(!data) return;
+
+        data.forEach((value: HostEventMeta) => {
+            const element = this.isShadow ? this.shadowRoot : this;
+
+            if(element) {
+                element.addEventListener(value.event, value.method.bind(this))
+            }
+
         })
     }
 
