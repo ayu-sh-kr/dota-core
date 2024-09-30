@@ -1,5 +1,11 @@
 # @ayu-sh-kr/dota-core
 
+## 1.6.9
+
+### Patch Changes
+
+- 1e0e15b: Directory restructuring and added docs
+
 ## 1.6.8
 
 ### Patch Changes
