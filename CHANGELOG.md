@@ -1,5 +1,11 @@
 # @ayu-sh-kr/dota-core
 
+## 1.6.10
+
+### Patch Changes
+
+- 7ea8a01: Added new Property Converter FunctionType as FunctionT
+
 ## 1.6.9
 
 ### Patch Changes
