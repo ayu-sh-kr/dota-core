@@ -195,4 +195,39 @@ const ObjectType: PropertyType<object> = {
     }
 }
 
-export {StringType as String, NumberType as Number, BooleanType as Boolean, ObjectType as Object}
+/**
+ * A `PropertyType` that processes a value into a function.
+ *
+ * This constant defines a `PropertyType` for functions, which includes a `process` method
+ * that takes a string value and converts it to a function. If the conversion fails, an error is thrown.
+ *
+ * @type {PropertyType<Function>}
+ *
+ * @property {function(string): Function} process - A method that takes a string value and converts it to a function.
+ *
+ * @throws {Error} If the value cannot be converted to a function.
+ *
+ * @example
+ * // Example of using FunctionType to process a string into a function
+ * const functionValue = FunctionType.process('return x + y;');
+ * console.log(functionValue(1, 2)); // Output: 3
+ *
+ * @example
+ * // Example of handling an error when the value cannot be converted to a function
+ * try {
+ *     const invalidFunctionValue = FunctionType.process('invalid function string');
+ * } catch (e) {
+ *     console.error(e.message); // Output: Value is not of given type: invalid function string
+ * }
+ */
+const FunctionType: PropertyType<Function> = {
+    process: (value: string) => {
+        try {
+            return Function(value)
+        } catch (e) {
+            throw new Error(`Value is not of given type: ${value}`)
+        }
+    }
+}
+
+export {StringType as String, NumberType as Number, BooleanType as Boolean, ObjectType as Object, FunctionType as FunctionT}
