@@ -8,9 +8,6 @@ importers:
 
   .:
     dependencies:
-      '@types/node':
-        specifier: ^22.5.0
-        version: 22.5.4
       reflect-metadata:
         specifier: ^0.2.2
         version: 0.2.2
@@ -24,6 +21,9 @@ importers:
       '@types/jest':
         specifier: ^29.5.13
         version: 29.5.13
+      '@types/node':
+        specifier: ^22.5.0
+        version: 22.5.4
       jest:
         specifier: ^29.7.0
         version: 29.7.0(@types/node@22.5.4)(ts-node@10.9.2(@swc/core@1.6.6)(@types/node@22.5.4)(typescript@5.5.2))
