@@ -1,5 +1,15 @@
 # @ayu-sh-kr/dota-core
 
+## 1.6.11
+
+### Patch Changes
+
+- 73a7832: Bug fix for the PropertyType Function
+
+  Exported HostListener from the module
+
+  Added test to the code base
+
 ## 1.6.10
 
 ### Patch Changes
