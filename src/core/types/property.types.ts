@@ -145,7 +145,7 @@ const BooleanType: PropertyType<boolean> = {
         } else if(value === "true") {
             return true;
         }
-        throw new Error(`Not a boolean type -> value: ${value}`);
+        throw new Error(`Value is not of type boolean: ${value}`);
     }
 }
 
@@ -222,11 +222,17 @@ const ObjectType: PropertyType<object> = {
  */
 const FunctionType: PropertyType<Function> = {
     process: (value: any) => {
+
+        if(typeof value === "function") {
+            return value
+        }
+
         if (typeof value !== 'string') {
             throw new Error(`Value is not of given type: ${value}`);
         }
+
         try {
-            return new Function(value);
+            return Function('return ' + value)();
         } catch (e) {
             throw new Error(`Value is not of given type: ${value}`);
         }
