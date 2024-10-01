@@ -25,7 +25,7 @@
     "noFallthroughCasesInSwitch": true,
     "paths": {
       "@dota/*": ["./src/*"],
-      "@src/*": ["src/*"]
+      "@src/*": ["./src/*"]
     }
   },
   "include": ["src", "test"]
