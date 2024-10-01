@@ -3,10 +3,10 @@ import {HelperUtils} from "@dota/core/helper";
 
 
 /**
- * Bootstraps custom elements by defining them with the custom elements registry.
+ * Bootstraps custom elements by defining them with the custom elements' registry.
  *
  * The `bootstrap` function takes an array of custom element constructors and registers them
- * with the custom elements registry. It retrieves the component metadata using `HelperUtils.getComponentMetadata`
+ * with the custom elements' registry. It retrieves the component metadata using `HelperUtils.getComponentMetadata`
  * and defines the custom element if it is not already defined.
  *
  * @param {CustomElementConstructor[]} elements - An array of custom element constructors to be registered.
