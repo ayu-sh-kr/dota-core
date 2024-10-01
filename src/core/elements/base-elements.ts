@@ -384,7 +384,7 @@ export abstract class BaseElement extends HTMLElement {
             const element = this.isShadow ? this.shadowRoot : this;
 
             if(element) {
-                element.addEventListener(value.event, value.method.bind(this))
+                element.addEventListener(value.event, (event: Event) => value.method.call(this, event))
             }
 
         })
