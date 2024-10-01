@@ -100,9 +100,8 @@ describe('ObjectType', () => {
 describe('FunctionType', () => {
 
     it('should convert a valid function string to a function', () => {
-        const sum = (x: number, y: number) => x + y;
-        const value = 'return x + y;';
-        const result = FunctionT.process(sum.toString());
+        const value = '(x, y) => x + y;';
+        const result = FunctionT.process(value);
         expect(result(1, 2)).toBe(3);
     });
 
@@ -114,5 +113,11 @@ describe('FunctionType', () => {
     it('should throw an error for non-string values', () => {
         const value = 123;
         expect(() => FunctionT.process(value)).toThrow('Value is not of given type: 123');
+    });
+
+    it('should check for other function too', () => {
+        const value = "(str) => str"
+        const result = FunctionT.process(value);
+        expect(result("test")).toBe('test')
     });
 });
