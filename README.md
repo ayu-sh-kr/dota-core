@@ -405,3 +405,55 @@ bootstrap([
     ScaffoldComponent,
 ])
 ```
+
+## @HostListener Decorator
+
+The @HostListener decorator binds a method to a specified event on the host element or its shadow root. It is used to listen for events such as 'click', 'mouseover', etc., and execute the decorated method when the event is triggered.
+
+**Usage**
+```typescript
+import {HostListener, BaseElement, Component, HTML} from "@ayu-sh-kr/dota-core/dist";
+
+@Component({
+    selector: 'my-component',
+    shadow: true
+})
+export class MyComponent extends BaseElement {
+
+    @HostListener({ event: 'click' })
+    public handleClick(event: Event) {
+        console.log('Host element clicked', event);
+    }
+
+    render() {
+        return HTML`<div>Click Me</div>`;
+    }
+}
+```
+
+## @WindowListener Decorator
+
+The @WindowListener decorator binds a method to a specified event on the global window object. It is used to listen for events such as 'resize', 'scroll', etc., and execute the decorated method when the event is triggered.
+
+**Usage**
+
+```typescript
+import {WindowListener, BaseElement, Component, HTML} from "@ayu-sh-kr/dota-core/dist";
+
+@Component({
+    selector: 'my-component',
+    shadow: true
+})
+export class MyComponent extends BaseElement {
+
+    @WindowListener({ event: 'resize' })
+    public handleResize(event: Event) {
+        console.log('Window resized', event);
+    }
+
+    render() {
+        return HTML`<div>Resize the window to see the effect</div>`;
+    }
+}
+```
+
