@@ -1,5 +1,5 @@
 import {HelperUtils} from "@dota/core/helper";
-import {BindConfig, EventDetails, HostEventMeta, MethodDetails, PropertyDetails} from "@dota/core/types";
+import {BindConfig, EventDetails, EventOptionMeta, MethodDetails, PropertyDetails} from "@dota/core/types";
 import {EventEmitter, Sanitizer} from "@dota/core/utils";
 
 
@@ -26,7 +26,8 @@ export abstract class BaseElement extends HTMLElement {
      * 4. Binds the component's internal methods to their corresponding events.
      * 5. Binds event emitters to the component's properties.
      * 6. Binds the event related to host to its internal methods.
-     * 7. Executed methods annotated with `@AfterInit`
+     * 7. Bind the event on window to its internal methods.
+     * 8. Executed methods annotated with `@AfterInit`
      * @method connectedCallback
      */
     connectedCallback() {
@@ -48,6 +49,9 @@ export abstract class BaseElement extends HTMLElement {
 
         // Bind the events on the Host with internal method
         this.bindHostEvents();
+
+        // Bind the events on the Window with internal method
+        this.bindWindowEvents();
 
         // handle after init
         this.handleAfterInit();
@@ -376,17 +380,50 @@ export abstract class BaseElement extends HTMLElement {
      * // The click event on the host element will now trigger the handleClick method
      */
     bindHostEvents() {
-        const data = HelperUtils.fetchOrCreate<HostEventMeta>(this, 'Host');
+        const data = HelperUtils.fetchOrCreate<EventOptionMeta>(this, 'Host');
 
         if(!data) return;
 
-        data.forEach((value: HostEventMeta) => {
+        data.forEach((value: EventOptionMeta) => {
             const element = this.isShadow ? this.shadowRoot : this;
 
             if(element) {
                 element.addEventListener(value.event, (event: Event) => value.method.call(this, event))
             }
 
+        })
+    }
+
+
+    /**
+     * Binds window events to the component's methods based on metadata.
+     *
+     * This method retrieves metadata associated with the component's constructor
+     * to find window event configurations. It then binds the specified methods
+     * to the corresponding events on the global `window` object.
+     *
+     * @method bindWindowEvents
+     *
+     * @example
+     * // Example of using bindWindowEvents to bind window events
+     * class MyComponent extends BaseElement {
+     *   \@WindowListener({ event: 'resize' })
+     *   public handleResize(event: Event) {
+     *     console.log('Window resized', event);
+     *   }
+     * }
+     *
+     * const myComponent = new MyComponent();
+     * myComponent.bindWindowEvents();
+     * // The resize event on the window will now trigger the handleResize method
+     */
+    bindWindowEvents() {
+        const data = HelperUtils.fetchOrCreate<EventOptionMeta>(this, 'Window');
+
+        if (!data) return;
+
+        data.forEach((value: EventOptionMeta) => {
+            window.addEventListener(value.event, (event: Event) => value.method.call(this, event))
         })
     }
 

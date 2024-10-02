@@ -253,26 +253,19 @@ interface EventOptions {
  * Configuration options for binding an event to a method.
  *
  * This interface defines the structure of the options object used to specify
- * the event type when binding an event to a method using decorators like `HostListener`.
+ * the event type when binding an event to a method using decorators like `HostListener` or `WindowListener`.
  *
  * @interface EventOptions
  *
  * @property {string} event - The type of the event to bind to the method (e.g., 'click', 'mouseover').
- *
- * @example
- * // Example of using EventOptions with HostListenerDecorator
- * class MyComponent {
- *   \@HostListener({ event: 'click' })
- *   public handleClick(event: Event) {
- *     console.log('Host element clicked', event);
- *   }
- * }
+ * @property {string} name - The name of the method to which event will be bounded.
+ * @property {function} method - The method itself which is going to be bounded.
  */
-interface HostEventMeta {
+interface EventOptionMeta {
     event: string,
     name: string
     method: Function
 }
 
-export type {EventDetails, MethodDetails, PropertyDetails, PropertyConfig, ComponentConfig, BindConfig, EventConfig, EventOptions, HostEventMeta}
+export type {EventDetails, MethodDetails, PropertyDetails, PropertyConfig, ComponentConfig, BindConfig, EventConfig, EventOptions, EventOptionMeta}
 export {EventType}

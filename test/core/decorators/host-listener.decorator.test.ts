@@ -1,11 +1,10 @@
-import {BaseElement, Component, EventOptions} from "@src/core";
+import {BaseElement, Component} from "@src/core";
 import {HostListener} from "@src/core/decorators/host-listener.decorator.ts";
 
 
 describe('HostListenerDecorator', () => {
     it('should  bind the method to the specified event', () => {
         const mockMethod = jest.fn();
-        const options: EventOptions = {event: 'click'};
 
         @Component({
             selector: 'test-component',
