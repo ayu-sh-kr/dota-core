@@ -1,5 +1,11 @@
 # @ayu-sh-kr/dota-core
 
+## 1.6.12
+
+### Patch Changes
+
+- 0b28f97: added new decorator WindowListener
+
 ## 1.6.11
 
 ### Patch Changes
