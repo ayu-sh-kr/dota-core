@@ -1,5 +1,11 @@
 # @ayu-sh-kr/dota-core
 
+## 1.6.13
+
+### Patch Changes
+
+- 9b0e9a8: Update event binding mechanism, enable to bind multiple event to same method using the single decorator
+
 ## 1.6.12
 
 ### Patch Changes
