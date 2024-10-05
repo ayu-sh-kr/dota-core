@@ -245,7 +245,7 @@ interface EventDetails {
  * }
  */
 interface EventOptions {
-    event: string
+    event: string | string[]
 }
 
 
@@ -262,7 +262,7 @@ interface EventOptions {
  * @property {function} method - The method itself which is going to be bounded.
  */
 interface EventOptionMeta {
-    event: string,
+    event: string | string[],
     name: string
     method: Function
 }

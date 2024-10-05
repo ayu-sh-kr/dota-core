@@ -100,7 +100,7 @@ export abstract class BaseElement extends HTMLElement {
             HelperUtils.bindReactive(this);
         }
 
-        if(!newValue) {
+        if (!newValue) {
             return;
         }
 
@@ -141,7 +141,7 @@ export abstract class BaseElement extends HTMLElement {
 
         const fun = data.get('beforeViewInit')
 
-        if(fun) {
+        if (fun) {
             fun.apply(this);
         }
 
@@ -186,7 +186,7 @@ export abstract class BaseElement extends HTMLElement {
 
         this.isShadow = Reflect.getMetadata(this.constructor.name + ':' + 'shadow', this.constructor)
 
-        if(this.isShadow){
+        if (this.isShadow) {
             this.shadowRoot = this.attachShadow({mode: "open"})
         }
 
@@ -243,7 +243,7 @@ export abstract class BaseElement extends HTMLElement {
      */
     bindMethods() {
         let data = HelperUtils.fetchOrCreate<BindConfig>(this, 'Bind');
-        if(data) {
+        if (data) {
             data.forEach((config, methodName) => {
                 const element = this.isShadow ? this.shadowRoot.querySelector(config.id) : this.querySelector(config.id);
                 if (element) {
@@ -274,13 +274,14 @@ export abstract class BaseElement extends HTMLElement {
 
         const data = HelperUtils.fetchOrCreate<BindConfig>(this, 'Bind')
 
-        if(!data) return;
+        if (!data) return;
 
-        data.forEach((config: BindConfig)=> {
+        data.forEach((config: BindConfig) => {
             const element = this.querySelector(config.id);
 
-            if(!element) return;
-            element.removeEventListener(config.event, () => {});
+            if (!element) return;
+            element.removeEventListener(config.event, () => {
+            });
         })
 
     }
@@ -298,10 +299,10 @@ export abstract class BaseElement extends HTMLElement {
 
         let data = HelperUtils.fetchOrCreate<MethodDetails>(this, 'Exposed')
 
-        if(data) {
-            data.forEach((value, key)  => {
+        if (data) {
+            data.forEach((value, key) => {
                 if (typeof window !== "undefined") {
-                    if(!(window as any)[key]) {
+                    if (!(window as any)[key]) {
                         (window as any)[key] = value.method.bind(this);
                     }
                 }
@@ -329,7 +330,7 @@ export abstract class BaseElement extends HTMLElement {
         if (data) {
             let property = data.get(name);
 
-            if(property) {
+            if (property) {
                 this[property.prototype] = Sanitizer.sanitize(value, property.type);
                 return;
             }
@@ -349,7 +350,7 @@ export abstract class BaseElement extends HTMLElement {
 
         let data = HelperUtils.fetchOrCreate<EventDetails>(this, 'Output')
 
-        if(!data) return;
+        if (!data) return;
 
         data.forEach((value: EventDetails, key: string) => {
             this[key] = new EventEmitter(value.eventName)
@@ -362,7 +363,9 @@ export abstract class BaseElement extends HTMLElement {
      *
      * This method retrieves metadata associated with the component's constructor
      * to find host event configurations. It then binds the specified methods
-     * to the corresponding events on the host element or its shadow root.
+     * to the corresponding events on the host element or its shadow root. If the event is
+     * a string, it adds a single event listener. If the event is an array of strings,
+     * it traverses the array and adds event listeners for each event.
      *
      * @method bindHostEvents
      *
@@ -382,13 +385,19 @@ export abstract class BaseElement extends HTMLElement {
     bindHostEvents() {
         const data = HelperUtils.fetchOrCreate<EventOptionMeta>(this, 'Host');
 
-        if(!data) return;
+        if (!data) return;
 
         data.forEach((value: EventOptionMeta) => {
             const element = this.isShadow ? this.shadowRoot : this;
 
-            if(element) {
-                element.addEventListener(value.event, (event: Event) => value.method.call(this, event))
+            if (element) {
+                if (typeof value.event === 'string') {
+                    element.addEventListener(value.event, (event: Event) => value.method.call(this, event))
+                } else if (Array.isArray(value.event)) {
+                    value.event.forEach((eventName) => {
+                        element.addEventListener(eventName, (event: Event) => value.method.call(this, event))
+                    })
+                }
             }
 
         })
@@ -400,7 +409,9 @@ export abstract class BaseElement extends HTMLElement {
      *
      * This method retrieves metadata associated with the component's constructor
      * to find window event configurations. It then binds the specified methods
-     * to the corresponding events on the global `window` object.
+     * to the corresponding events on the global `window` object. If the event is
+     * a string, it adds a single event listener. If the event is an array of strings,
+     * it traverses the array and adds event listeners for each event.
      *
      * @method bindWindowEvents
      *
@@ -423,7 +434,13 @@ export abstract class BaseElement extends HTMLElement {
         if (!data) return;
 
         data.forEach((value: EventOptionMeta) => {
-            window.addEventListener(value.event, (event: Event) => value.method.call(this, event))
+            if (typeof value.event === 'string') {
+                window.addEventListener(value.event, (event: Event) => value.method.call(this, event))
+            } else if (Array.isArray(value.event)) {
+                value.event.forEach((eventName) => {
+                    window.addEventListener(eventName, (event: Event) => value.method.call(this, event))
+                })
+            }
         })
     }
 

@@ -9,7 +9,7 @@ import {EventOptions, HelperUtils, EventOptionMeta} from "@src/core";
  * execute the decorated method when the event is triggered.
  *
  * @param {EventOptions} config - Configuration options for the event listener.
- * @param {string} config.event - The type of the event to bind to the method (e.g., 'click', 'resize').
+ * @param {string | string[]} config.event - The type of the event to bind to the method (e.g., 'click', 'resize').
  *
  * @returns {MethodDecorator} - A method decorator that binds the specified event to the method.
  *
