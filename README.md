@@ -1,142 +1,203 @@
-### DOTA CORE
-Started **dota-core** as college project for creating a common API for creating web components and just automate bunch of things using decorators.
-Major concern was to automate the re-rendering of the component upon the change in the attribute, providing event listeners and a way write components
-that just looks clean.
+# dota-core
 
-* Templating Library for Web Components
-* Provides decorators based support for Web Components
-* Automatic re-rendering of components.
-* Attribute-Property binding.
+`dota-core` is a utility library for creating and managing web components. 
+It provide clean API and functions to manage aspect such as `Property Binding`, 
+`Event Binding`, `Listeners`, `Reactivity` etc. The library aims to simplify the 
+development of web components by offering tools to efficiently manage component properties, 
+events, and their interactions.
 
-```typescript
-import {HTML, Component, BaseElement, Property, EventListener, EventType} from "@ayu-sh-kr/dota-core/dist";
-import {StringType} from "./property.types";
+## Table of Contents
+- [Installation](#installation)
+- [Usage](#usage)
+- [Contributing](#contributing)
+- [License](#license)
 
-export class Widget extends BaseElement {
+## Installation
+You can install dota core using any popular package manager of your choice
+which install packages for `npm`.
 
-    @Propert({name: 'data', type: StringType})
-    data: string;
-
-    constructor() {
-        super();
-    }
-
-    @EventListener({name: 'click', type: EventType.ROOT})
-    handleClick() {
-        console.log('clicked')
-    }
-
-    render() {
-        return HTML`<div>Click Me</div>`
-    }
-}
+```shell
+npm install @ayu-sh-kr/dota-core
 ```
-* EventType.ROOT -> Represents the current element (attach listener to an element)
 
-```typescript
-import {Component, HTML, Component, BaseElement, Property, EventListener, EventType} from "@ayu-sh-kr/dota-core/dist";
-import {StringType} from "./property.types";
+## Usage
 
-export class Widget extends BaseElement {
+## Creating Web Components Using `dota-core`
 
-    @Propert({name: 'data', type: StringType})
-    data: string;
+### Step-by-Step Guide
 
-    constructor() {
-        super();
-    }
+### 1. Install `dota-core`
 
-    @EventListener({name: 'click', type: EventType.WINDOW})
-    handleClick() {
-        console.log('clicked')
-    }
+First, install the `dota-core` library using npm:
 
-    render() {
-        return HTML`<div>Click Me</div>`
-    }
-}
+```sh
+npm install @ayu-sh-kr/dota-core
 ```
-* EventType.WINDOW -> Represent the window object (attach listener to the window)
 
+### 2. Define a Web Component
 
-### Inner Component Event Handling
-
-```typescript
-import {BaseElement, HTML} from "@ayu-sh-kr/dota-core/dist";
-
-export class ColorTextComponent extends BaseElement {
-    
-    handleClick(){
-        console.log('clicked')
-    }
-
-    render() {
-        return HTML`
-            <div @click="{handleClick}">Click Me<div>
-        `
-    }
-}
-```
-*Currently only work for methods with no parameters*
-
-### Exposing Class Methods to Global Namespace
+Create a new TypeScript file for your web component. Import the necessary decorators and base classes from `dota-core`.
 
 ```typescript
-import {BooleanType, StringType} from "./property.types";
+import {BaseElement, Component} from '@ayu-sh-kr/dota-core';
 
 @Component({
-    selector: 'color-text',
+    selecter: 'hello-dota',
     shadow: false
 })
-export class ColoredTextComponent extends BaseElement {
+class MyComponent extends BaseElement {
 
-    @Property({name: 'text', type: StringType})
-    text!: string
+    name = 'Dota';
+    
+    constructor() {
+        super();
+    }
+    
+    render() {
+        // language=HTML
+        return `
+        <div>Hello ${this.name}</div>
+        `
+    }
 
-    @Property({name: 'color', type: StringType})
-    color!: string
+}
 
-    @Property({name: 'bold', type: BooleanType})
-    bold!: boolean
+```
+### 3. Bootstrapping Web Components
+Registers the web component with browser for use.
 
-    colorSet = ['text-purple-400', 'text-yellow-400', 'text-emerald-400']
+```typescript
+import {bootstrap} from "@ayu-sh-kr/dota-core";
+import {MyComponent} from 'component-location';
+
+bootstrap([
+    MyComponent
+]);
+```
+
+### 4. Use the Web Component
+
+Include the custom element in your HTML file:
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Web Component</title>
+</head>
+<body>
+  <hello-dota></hello-dota>
+  <script type="module" src="./path-to-your-component.ts"></script>
+</body>
+</html>
+```
+
+## Property Binding
+With property binding attributes in the component tags are coupled with the field in the component class.
+Which allows you to use those property and perform operations on it. Adds reactivity and changes are reflected 
+on the UI.
+
+```typescript
+import {Component, BaseElement, Property, String} from "@ayu-sh-kr/dota-core";
+
+@Component({
+    selecter: 'dota-text',
+    shadow: false
+})
+export class TextComponent extends BaseElement {
+
+    @Property({
+        name: 'data',
+        type: String
+    })
+    data!: string
 
     constructor() {
         super();
     }
-
-    @Expose()
-    changeColor() {
-        const randomIndex = Math.floor(Math.random() * this.colorSet.length);
-        this.setAttribute('color', this.colorSet[randomIndex])
-    }
-
-    render(): string {
-        const bold = this.bold ? 'font-semibold' : '';
-        return HTML`
-            <div class="${this.color} ${bold} flex flex-col items-center">
-                <div>${this.text}</div>
-                <span 
-                    id="chng"
-                    class="text-center w-fit px-3 py-1 cursor-pointer text-white bg-yellow-400 active:scale-95 text-sm border rounded-lg"
-                    onclick="changeColor()"
-                >
-                    Click to Change Color
-                </span>
-            </div>
-        `;
+    
+    render() {
+        return `
+        <p>${this.data}</p>
+        `
     }
 
 }
 ```
 
+```html
+<dota-text data="Hello Dota"></dota-text>
+```
 
-### Event Binding
-Process of Binding Events on Element to the Class Method, fallback feature till the
-template rendering available
+## Event Binding
+Event binding in web components refers to the process of attaching event listeners to elements within the component. 
+This allows the component to respond to user interactions or other events. `dota-core` allows you to 
+bind event specific to host, window and elements withing the host component.
+
+### Host Event Listener
+The decorator `@HostEventListener` allows you to watch the event on the host component and map it to the method inside the `HostComponent`.
 
 ```typescript
-import {BaseElement, Component, HTML, Property, BindEvent} from "@ayu-sh-kr/dota-core/dist";
+import {Component, BaseElement, Property, String, HostListener} from "@ayu-sh-kr/dota-core";
+
+@Component({
+    selecter: 'dota-button',
+    shadow: false
+})
+export class TextComponent extends BaseElement {
+
+    constructor() {
+        super();
+    }
+
+    @HostListener({ event: 'click'})
+    handleClick() {
+        console.log('Clicked ...')
+    }
+
+    render() {
+        return `
+        <button>Click Me</button>
+        `
+    }
+
+}
+```
+
+### Window Event Listener
+THe decorator `@WindowEventListener` allows you to watch for the event emitter at the window level and
+map those to method internal to the given component and take action accordingly.
+
+```typescript
+import {Component, BaseElement, Property, String, WindowListener} from "@ayu-sh-kr/dota-core";
+
+@Component({
+    selecter: 'dota-button',
+    shadow: false
+})
+export class TextComponent extends BaseElement {
+
+    constructor() {
+        super();
+    }
+
+    @WindowListener({event: 'click'})
+    handleClick() {
+        console.log('Clicked ...')
+    }
+
+    // othe methods ...
+
+}
+```
+
+### Event Binding
+Use the decorator `@BindEvent` to map the internal element via id with an event you want to listen for.
+
+```typescript
+import {BaseElement, Component, Property, BindEvent} from "@ayu-sh-kr/dota-core";
 import {StringType} from "./property.types";
 
 @Component({
@@ -154,97 +215,21 @@ export class TextComponent extends BaseElement {
     }
 
     render() {
-        return HTML`
+        return `
         <div id="clr12">${this.text}<div>
         `
     }
 }
 ```
 
-### Property Binding
+## Emitting Custom Events
+Event emitters object and decorator are used to emit custom event based on certain behavior.
+`dota-core` provide decorator `@Event` and object `EventEmitter` for defining custom emitter and
+that emitter can be further used to emit custom events.
 
+### EventEmitter Object
 ```typescript
-import {StringType} from "./property.types";
-
-@Component({
-    selector: 'text-component'
-})
-export class TextComponent extends BaseElement {
-
-    @Property({name: 'text', type: StringType})
-    text!: string;
-
-    render() {
-        return HTML`
-        <div>${this.text}</div>
-        `
-    }
-}
-```
-
-```html
-<text-component text="Text to render"></text-component>
-```
-
-Now if we want the attribute name to be different
-
-```typescript
-import {StringType} from "./property.types";
-
-@Component({
-    selector: 'text-component'
-})
-export class TextComponent extends BaseElement {
-
-    @Property({name: 'data', type: StringType})
-    text!: string;
-
-    render() {
-        return HTML`
-        <div>${this.text}</div>
-        `
-    }
-}
-```
-
-```html
-<text-component data="Text to render"></text-component>
-```
-
-### Add Code and Changes After View is Rendered
-
-```typescript
-import {BaseElement, Component, HTML, AfterInit} from "@ayu-sh-kr/dota-core/dist";
-
-@Component({
-    selector: 'neat-pots',
-    shadow: false
-})
-export class NeatPotsBeam extends BaseElement {
-
-    constructor() {
-        super();
-    }
-
-    @AfterInit()
-    afterViewInit() {
-        console.log('Run After View is Rendered');
-    }
-
-    render() {
-        return HTML`
-            <div>This is a Custom Element Component</div>
-        `
-    }
-}
-```
-
-
-### EventEmitter
-
-```typescript
-import {BaseElement, BindEvent, Component, Property, EventEmitter} from "@ayu-sh-kr/dota-core/dist";
-import {StringType} from "./property.types";
+import {BaseElement, BindEvent, Component, Property, EventEmitter, String} from "@ayu-sh-kr/dota-core";
 
 @Component({
     selecter: 'brave-seas',
@@ -252,7 +237,7 @@ import {StringType} from "./property.types";
 })
 export class BraveSeasProve extends BaseElement {
 
-    @Property({name: 'data', type: StringType})
+    @Property({name: 'data', type: String})
     data!: string
 
     dataChange = new EventEmitter<string>('data-change')
@@ -263,15 +248,16 @@ export class BraveSeasProve extends BaseElement {
     }
 
     render() {
-        return HTML`<div id="chng">${this.data}</div>`
+        return `<div id="chng">${this.data}</div>`
     }
 }
 ```
+
 ### @Event Annotation
 Added **@Event** decorator to initialize EventEmitters
 
 ```typescript
-import {AfterInit, BaseElement, Component, EventEmitter, Event} from "@ayu-sh-kr/dota-core/dist";
+import {AfterInit, BaseElement, Component, EventEmitter, Event} from "@ayu-sh-kr/dota-core";
 
 @Component({
     selector: 'tidy-dryers',
@@ -293,36 +279,12 @@ export class TidyDryersWink extends BaseElement {
 }
 ```
 
-```typescript
-import {BaseElement, Component, EventListener, HTML} from "@ayu-sh-kr/dota-core/dist";
-import type {EventType} from "@ayu-sh-kr/dota-core/dist";
+## Handling Behavior Before and After Rendering
 
-@Component({
-    selector: 'listener-component',
-    shadow: false
-})
-export class ListenerComponent extends BaseElement {
-
-    @EventListener({name: 'onColorChange', type: EventType.ROOT})
-    logEvent(event: Event) {
-        console.log(event);
-    }
-
-
-    render() {
-        return HTML`
-            <tidy-dryers></tidy-dryers>
-        `
-    }
-}
-```
-
-
-### BeforeInit
-It is used to do something before rendering the component, you can access the inner html of your custom component and assign it to itself
+### Add Code and Changes Before View Init using `@BeforeInit()`
 
 ```typescript
-import {Component, BaseElement, BeforeInit} from "@ayu-sh-kr/dota-core/dist";
+import {Component, BaseElement, BeforeInit} from "@ayu-sh-kr/dota-core";
 
 @Component({
     selector: 'app-scaffold',
@@ -354,106 +316,45 @@ export class ScaffoldComponent extends BaseElement {
 }
 ```
 
-## Stable version 1.6.0
-Update project -> Automate reactivity for change in the property value by updating dom by default.
+### Add Code and Changes After View is Rendered using `@AfterViewInit()`
 
-### Reactive support
-With reactivity dom gets update each time a property marked as **@Property** gets its value changed.
 
-```typescript HTML
-import {BindEvent, Component, Property, BaseElement} from "@ayu-sh-kr/dota-core/dist";
-import {NumberType} from "./property.types";
+```typescript
+import {BaseElement, Component, HTML, AfterInit} from "@ayu-sh-kr/dota-core";
 
 @Component({
-    selector: 'app-counter',
+    selector: 'neat-pots',
     shadow: false
 })
-export class CounterComponent extends BaseElement {
+export class NeatPotsBeam extends BaseElement {
 
-    @Property({name: 'count', type: NumberType})
-    count!: number;
+    constructor() {
+        super();
+    }
 
-    @BindEvent({event: 'click', id: '#button'})
-    increment() {
-        this.count += 1;
+    @AfterInit()
+    afterViewInit() { // function name must be afterViewInit
+        console.log('Run After View is Rendered');
     }
 
     render() {
-        return `
-            <div>${this.count}</div>
-            <button id="button" type="submit">Click Me</button>
+        return HTML`
+            <div>This is a Custom Element Component</div>
         `
     }
-
 }
 ```
 
-```HTML
-<app-count count="0"></app-count>
-```
+### Summary
+
+- **Install**: Use npm to install `dota-core`.
+- **Use**: Include the custom element in your HTML file.
+
+This guide provides a basic example of creating and using a web component with `dota-core`. For more advanced usage and features, refer to the library's API documentation.
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE.txt) file for details.
 
 
-## Initializing Components
-Use the bootstrap function to initialize all the required component
-
-```typescript
-import {bootstrap} from "@ayu-sh-kr/dota-core/dist";
-import {ButtonComponent, ScaffoldComponent} from "./components";
-
-bootstrap([
-    ButtonComponent,
-    ScaffoldComponent,
-])
-```
-
-## @HostListener Decorator
-
-The @HostListener decorator binds a method to a specified event on the host element or its shadow root. It is used to listen for events such as 'click', 'mouseover', etc., and execute the decorated method when the event is triggered.
-
-**Usage**
-```typescript
-import {HostListener, BaseElement, Component, HTML} from "@ayu-sh-kr/dota-core/dist";
-
-@Component({
-    selector: 'my-component',
-    shadow: true
-})
-export class MyComponent extends BaseElement {
-
-    @HostListener({ event: 'click' })
-    public handleClick(event: Event) {
-        console.log('Host element clicked', event);
-    }
-
-    render() {
-        return HTML`<div>Click Me</div>`;
-    }
-}
-```
-
-## @WindowListener Decorator
-
-The @WindowListener decorator binds a method to a specified event on the global window object. It is used to listen for events such as 'resize', 'scroll', etc., and execute the decorated method when the event is triggered.
-
-**Usage**
-
-```typescript
-import {WindowListener, BaseElement, Component, HTML} from "@ayu-sh-kr/dota-core/dist";
-
-@Component({
-    selector: 'my-component',
-    shadow: true
-})
-export class MyComponent extends BaseElement {
-
-    @WindowListener({ event: 'resize' })
-    public handleResize(event: Event) {
-        console.log('Window resized', event);
-    }
-
-    render() {
-        return HTML`<div>Resize the window to see the effect</div>`;
-    }
-}
-```
 
