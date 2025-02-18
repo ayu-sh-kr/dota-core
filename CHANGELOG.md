@@ -1,5 +1,11 @@
 # @ayu-sh-kr/dota-core
 
+## 1.6.14
+
+### Patch Changes
+
+- 91dac99: Update Readme and Reconfigured build process to support both esm and commonjs projects
+
 ## 1.6.13
 
 ### Patch Changes
