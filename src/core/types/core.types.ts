@@ -267,5 +267,33 @@ interface EventOptionMeta {
     method: Function
 }
 
-export type {EventDetails, MethodDetails, PropertyDetails, PropertyConfig, ComponentConfig, BindConfig, EventConfig, EventOptions, EventOptionMeta}
+
+/**
+ * Configuration options for binding a watcher to a method.
+ *
+ * This interface defines the structure of the options object used to specify
+ * the property to watch and the method to call when the property changes.
+ *
+ * @interface WatcherOptionMeta
+ *
+ * @property {string | string[]} value - The name of the property or properties to watch.
+ * This property specifies the name(s) of the property or properties that will trigger the watcher.
+ *
+ * @property {string} name - The name of the method to call when the property changes.
+ * This property specifies the name of the method that will be called when the watched property changes.
+ *
+ * @property {function} method - The method itself which is going to be called when the property changes.
+ * This property holds a reference to the actual method function that will be called.
+ */
+interface WatcherOptionMeta {
+    value: string | string[],
+    name: string
+    method: Function
+}
+
+export type {
+    EventDetails, MethodDetails, PropertyDetails, PropertyConfig,
+    ComponentConfig, BindConfig, EventConfig, EventOptions,
+    EventOptionMeta, WatcherOptionMeta
+}
 export {EventType}
