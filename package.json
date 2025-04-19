@@ -17,6 +17,7 @@
   "scripts": {
     "build": "tsup src/**/*.ts --format esm, cjs --dts",
     "chunkless-build": "tsup src/index.ts --format esm, cjs --dts",
+    "build-pack": "pnpm chunkless-build && pnpm pack",
     "lint": "tsc",
     "test": "jest",
     "release": "pnpm run chunkless-build && changeset publish"
@@ -36,7 +37,7 @@
     "jsdom": "^25.0.1",
     "ts-jest": "^29.2.5",
     "ts-node": "^10.9.2",
-    "tsup": "^8.1.0",
+    "tsup": "8.3.5",
     "typescript": "^5.5.2"
   },
   "dependencies": {
