@@ -24,9 +24,14 @@ import {HelperUtils} from "@dota/core/helper";
  */
 export const bootstrap = (elements: CustomElementConstructor[]) => {
     elements.forEach(element => {
-        const meta:ComponentConfig = HelperUtils.getComponentMetadata(element, 'Component');
+        const meta: ComponentConfig = HelperUtils.getComponentMetadata(element, 'Component');
 
-        if(!customElements.get(meta.selector)) {
+        if (!meta) {
+            console.warn(`No metadata found for ${element.name}`);
+            return;
+        }
+
+        if (!customElements.get(meta.selector)) {
             customElements.define(meta.selector, element);
         }
 

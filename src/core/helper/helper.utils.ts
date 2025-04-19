@@ -69,7 +69,6 @@ export class HelperUtils {
                         element.setAttribute(value.name, v);
 
                         const watchers = HelperUtils.fetchOrCreate<WatcherOptionMeta>(element, `Watcher:${value.prototype}`);
-                        console.info(`Watchers for ${propertyKey}:`, watchers);
                         if (watchers && watchers.size > 0) {
                             watchers.forEach((item: WatcherOptionMeta) => {
                                 if(element[item.name] && typeof element[item.name] === 'function') {
@@ -98,9 +97,8 @@ export class HelperUtils {
      */
     static getComponentMetadata(targetClass: Object, decoratorName: string): any {
         if(Reflect.hasOwnMetadata(decoratorName, targetClass)) {
-            console.log(true)
+            return Reflect.getOwnMetadata(decoratorName, targetClass);
         }
-        return Reflect.getOwnMetadata(decoratorName, targetClass);
     }
 
 }
