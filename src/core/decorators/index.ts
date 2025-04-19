@@ -8,6 +8,7 @@ import { Expose } from '@dota/core/decorators/expose.decorator.ts';
 import { Emitter } from '@dota/core/decorators/event.decorator.ts';
 import {HostListener} from "@src/core/decorators/host-listener.decorator.ts";
 import {WindowListener} from "@src/core/decorators/window-listener.decorator.ts";
+import {Watcher} from "@src/core/decorators/watcher.decorator.ts";
 
 export {
     AfterInit,
@@ -19,5 +20,6 @@ export {
     Expose,
     Emitter,
     HostListener,
-    WindowListener
+    WindowListener,
+    Watcher
 };
