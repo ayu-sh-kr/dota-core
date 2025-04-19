@@ -1,5 +1,11 @@
 # @ayu-sh-kr/dota-core
 
+## 1.6.16
+
+### Patch Changes
+
+- f015ae5: Removed unwanted logging throughout the library
+
 ## 1.6.15
 
 ### Patch Changes
