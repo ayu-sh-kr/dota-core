@@ -1,5 +1,11 @@
 # @ayu-sh-kr/dota-core
 
+## 1.6.15
+
+### Patch Changes
+
+- ff17461: Add new decorator @Watcher to watch for property changes and calls the decorated method
+
 ## 1.6.14
 
 ### Patch Changes
