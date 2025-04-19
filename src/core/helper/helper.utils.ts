@@ -1,5 +1,5 @@
 import "reflect-metadata";
-import {PropertyDetails} from "@dota/core/types";
+import {PropertyDetails, WatcherOptionMeta} from "@dota/core/types";
 
 export class HelperUtils {
 
@@ -38,6 +38,8 @@ export class HelperUtils {
      * It then defines getter and setter methods for each property to enable reactivity.
      * When a property is set, the element's `updateHTML` method is called to re-render the component.
      *
+     * The function also checks for any watchers associated with the property and calls them if they exist.
+     *
      * @function bindReactive
      * @param {any} element - The element to bind reactive properties to.
      *
@@ -65,6 +67,16 @@ export class HelperUtils {
                     if(element[propertyKey] !== v) {
                         element[propertyKey] = v;
                         element.setAttribute(value.name, v);
+
+                        const watchers = HelperUtils.fetchOrCreate<WatcherOptionMeta>(element, `Watcher:${value.prototype}`);
+                        console.info(`Watchers for ${propertyKey}:`, watchers);
+                        if (watchers && watchers.size > 0) {
+                            watchers.forEach((item: WatcherOptionMeta) => {
+                                if(element[item.name] && typeof element[item.name] === 'function') {
+                                    item.method.call(element);
+                                }
+                            });
+                        }
                     }
                 },
 
