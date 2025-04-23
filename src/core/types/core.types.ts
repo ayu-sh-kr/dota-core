@@ -358,3 +358,8 @@ export type EventBindCollection = Map<EventBindType, Map<string, EventBindRecord
 export interface ParameterConfig {
   name: string
 }
+
+
+export interface StateConfig {
+  prototype: string
+}
