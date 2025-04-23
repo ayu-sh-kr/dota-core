@@ -1,5 +1,6 @@
 import "reflect-metadata";
 import {PropertyDetails, WatcherOptionMeta} from "@dota/core/types";
+import {BaseElement} from "@dota/core";
 
 export class HelperUtils {
 
@@ -68,14 +69,7 @@ export class HelperUtils {
             element[propertyKey] = v;
             element.setAttribute(value.name, v);
 
-            const watchers = HelperUtils.fetchOrCreate<WatcherOptionMeta>(element, `Watcher:${value.prototype}`);
-            if (watchers && watchers.size > 0) {
-              watchers.forEach((item: WatcherOptionMeta) => {
-                if (element[item.name] && typeof element[item.name] === 'function') {
-                  item.method.call(element);
-                }
-              });
-            }
+            HelperUtils.bindWatchers(element, value.prototype);
           }
         },
 
@@ -87,6 +81,17 @@ export class HelperUtils {
     element.reactive = true;
   }
 
+
+  static bindWatchers(element: BaseElement, prototype: string) {
+    const watchers = HelperUtils.fetchOrCreate<WatcherOptionMeta>(element, `Watcher:${prototype}`);
+    if (watchers && watchers.size > 0) {
+      watchers.forEach((item: WatcherOptionMeta) => {
+        if (element[item.name] && typeof element[item.name] === 'function') {
+          item.method.call(element);
+        }
+      });
+    }
+  }
 
   /**
    * Extracts metadata for a given decorator from a class.
