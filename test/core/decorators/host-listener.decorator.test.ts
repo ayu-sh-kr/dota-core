@@ -1,5 +1,5 @@
-import {BaseElement, Component} from "@src/core";
-import {HostListener} from "@src/core/decorators/host-listener.decorator.ts";
+import {BaseElement, Component} from "@dota/core";
+import {HostListener} from "@dota/core/decorators/host-listener.decorator.ts";
 
 
 describe('HostListenerDecorator', () => {

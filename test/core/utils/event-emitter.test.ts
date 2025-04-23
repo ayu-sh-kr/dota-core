@@ -1,4 +1,4 @@
-import {EventEmitter} from "@src/core";
+import {EventEmitter} from "@dota/core";
 
 
 describe('EventEmitter', () => {
