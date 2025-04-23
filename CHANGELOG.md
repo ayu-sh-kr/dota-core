@@ -1,5 +1,11 @@
 # @ayu-sh-kr/dota-core
 
+## 1.7.0
+
+### Minor Changes
+
+- 0bc71d2: optimized BaseElement for fast content loading, added new decorators - @State, @Param
+
 ## 1.6.16
 
 ### Patch Changes
