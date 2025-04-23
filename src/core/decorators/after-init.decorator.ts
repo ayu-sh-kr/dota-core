@@ -23,14 +23,14 @@ import {HelperUtils} from "@dota/core/helper";
  * document.body.appendChild(element);
  */
 function AfterInitDecorator(): MethodDecorator {
-    return function (target: any, propertyKey: string | symbol, descriptor: PropertyDescriptor) {
+  return function (target: any, propertyKey: string | symbol, descriptor: PropertyDescriptor) {
 
-        let data: Map<string, Function> = HelperUtils.fetchOrCreate<Function>(target, 'After');
+    let data: Map<string, Function> = HelperUtils.fetchOrCreate<Function>(target, 'After');
 
-        data.set(propertyKey.toString(), descriptor.value);
+    data.set(propertyKey.toString(), descriptor.value);
 
-        return descriptor;
-    }
+    return descriptor;
+  }
 }
 
 export {AfterInitDecorator as AfterInit}

@@ -1,5 +1,5 @@
-import {HelperUtils, WatcherOptionMeta} from "@src/core";
-import {GeneralUtils} from "@src/core/utils/GeneralUtils.ts";
+import {HelperUtils, WatcherOptionMeta} from "@dota/core";
+import {GeneralUtils} from "@dota/core/utils/GeneralUtils.ts";
 
 /**
  * Creates a method decorator that registers the decorated method as a watcher for one or more properties.
