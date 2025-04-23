@@ -1,25 +1,12 @@
-import { AfterInit } from '@dota/core/decorators/after-init.decorator.ts';
-import { BeforeInit } from '@dota/core/decorators/before-init.decorator.ts';
-import { BindEvent } from '@dota/core/decorators/bind-event.decorators.ts';
-import { Component } from '@dota/core/decorators/component.decorator.ts';
-import { Property } from '@dota/core/decorators/property.decorator.ts';
-import { EventListener } from '@dota/core/decorators/event-listener.decorator.ts';
-import { Expose } from '@dota/core/decorators/expose.decorator.ts';
-import { Emitter } from '@dota/core/decorators/event.decorator.ts';
-import {HostListener} from "@src/core/decorators/host-listener.decorator.ts";
-import {WindowListener} from "@src/core/decorators/window-listener.decorator.ts";
-import {Watcher} from "@src/core/decorators/watcher.decorator.ts";
-
-export {
-    AfterInit,
-    BeforeInit,
-    BindEvent,
-    Component,
-    Property,
-    EventListener,
-    Expose,
-    Emitter,
-    HostListener,
-    WindowListener,
-    Watcher
-};
+export { AfterInit } from '@dota/core/decorators/after-init.decorator.ts';
+export { BeforeInit } from '@dota/core/decorators/before-init.decorator.ts';
+export { BindEvent } from '@dota/core/decorators/bind-event.decorators.ts';
+export { Component } from '@dota/core/decorators/component.decorator.ts';
+export { Property } from '@dota/core/decorators/property.decorator.ts';
+export { EventListener } from '@dota/core/decorators/event-listener.decorator.ts';
+export { Expose } from '@dota/core/decorators/expose.decorator.ts';
+export { Emitter } from '@dota/core/decorators/event.decorator.ts';
+export {HostListener} from "@dota/core/decorators/host-listener.decorator.ts";
+export {WindowListener} from "@dota/core/decorators/window-listener.decorator.ts";
+export {Watcher} from "@dota/core/decorators/watcher.decorator.ts";
+export {DocumentListener} from "@dota/core/decorators/document-listener.decorator.ts";

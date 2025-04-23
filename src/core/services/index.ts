@@ -1,0 +1,1 @@
+export {EventManagerService} from "@dota/core/services/event-manager.service.ts";

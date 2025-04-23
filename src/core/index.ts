@@ -4,3 +4,4 @@ export * from "@dota/core/types";
 export * from "@dota/core/helper";
 export * from "@dota/core/elements";
 export * from "@dota/core/utils";
+export * from "@dota/core/services"
