@@ -3,7 +3,7 @@ import {
   BindConfig, EventDetails,
   EventOptionMeta,
   MethodDetails, ParameterConfig,
-  PropertyDetails
+  PropertyDetails, StateConfig
 } from "@dota/core/types";
 import {EventEmitter, Sanitizer} from "@dota/core/utils";
 import {EventManagerService} from "@dota/core/services";
@@ -45,10 +45,11 @@ export abstract class BaseElement extends HTMLElement {
     const bindWindowEvents = this.bindWindowEvents();
     const bindDocumentEvents = this.bindDocumentEvents();
     const bindParameters = this.bindParameters();
+    const bindState = this.bindState(this);
 
     Promise.all([
       exposedMethods, bindMethods, bindEmitter, bindHostEvents,
-      bindWindowEvents, bindDocumentEvents, bindParameters
+      bindWindowEvents, bindDocumentEvents, bindParameters, bindState
     ])
       .catch((reason) => console.error(reason));
 
@@ -506,6 +507,42 @@ export abstract class BaseElement extends HTMLElement {
         this[key] = params.get(value.name)
       })
     }
+  }
+
+  /**
+   * Binds state properties to the component's properties based on metadata.
+   *
+   * This method retrieves metadata associated with the component's constructor
+   * to find state configurations. It then binds the specified state properties
+   * to the corresponding properties on the component, allowing for reactive updates
+   * and change detection.
+   *
+   * @method bindState
+   */
+  private async bindState(element: BaseElement) {
+    let data = HelperUtils.fetchOrCreate<StateConfig>(element, 'State');
+
+    data.forEach((value: StateConfig) => {
+      const propertyKey = `_${value.prototype}`
+
+      Object.defineProperty(element, value.prototype, {
+        get(): any {
+          return element[propertyKey]
+        },
+
+        set(v: any) {
+          if (element[propertyKey] !== v) {
+            element[propertyKey] = v;
+            element.updateHTML();
+
+            HelperUtils.bindWatchers(element, value.prototype);
+          }
+        },
+
+        enumerable: true,
+        configurable: true
+      });
+    });
   }
 
 
