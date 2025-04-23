@@ -2,7 +2,7 @@ import {HelperUtils} from "@dota/core/helper";
 import {
   BindConfig, EventDetails,
   EventOptionMeta,
-  MethodDetails,
+  MethodDetails, ParameterConfig,
   PropertyDetails
 } from "@dota/core/types";
 import {EventEmitter, Sanitizer} from "@dota/core/utils";
@@ -44,8 +44,12 @@ export abstract class BaseElement extends HTMLElement {
     const bindHostEvents = this.bindHostEvents();
     const bindWindowEvents = this.bindWindowEvents();
     const bindDocumentEvents = this.bindDocumentEvents();
+    const bindParameters = this.bindParameters();
 
-    Promise.all([exposedMethods, bindMethods, bindEmitter, bindHostEvents, bindWindowEvents, bindDocumentEvents])
+    Promise.all([
+      exposedMethods, bindMethods, bindEmitter, bindHostEvents,
+      bindWindowEvents, bindDocumentEvents, bindParameters
+    ])
       .catch((reason) => console.error(reason));
 
     this.handleAfterInit();
@@ -481,6 +485,27 @@ export abstract class BaseElement extends HTMLElement {
     data.forEach((value: EventOptionMeta) => {
       this.eventManagerService.unbindEvent(document, value, 'Document');
     });
+  }
+
+
+  /**
+   * Binds URL parameters to the component's properties based on metadata.
+   *
+   * This method retrieves metadata associated with the component's constructor
+   * to find parameter configurations. It then binds the specified parameters
+   * to the corresponding properties on the component, allowing for dynamic
+   * updates based on URL query parameters.
+   *
+   * @method bindParameters
+   */
+  private async bindParameters() {
+    const data = HelperUtils.fetchOrCreate<ParameterConfig>(this, 'Param');
+    const params = new URLSearchParams(window.location.search);
+    if (data) {
+      data.forEach((value: ParameterConfig, key: string) => {
+        this[key] = params.get(value.name)
+      })
+    }
   }
 
 

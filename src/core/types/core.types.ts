@@ -291,12 +291,70 @@ export interface WatcherOptionMeta {
   method: Function
 }
 
+/**
+ * Type representing the different types of event bindings.
+ *
+ * This type defines the possible values for the type of event binding,
+ * which can be 'Bind', 'Window', 'Host', or 'Document'.
+ *
+ * @type EventBindType
+ */
 export type EventBindType = 'Bind' | 'Window' | 'Host' | 'Document';
 
+/**
+ * Configuration object for binding events to methods.
+ *
+ * This interface defines the structure of the event binding record,
+ * which includes the event options, the element to which the event is bound,
+ * and the type of event binding (e.g., 'Bind', 'Window', 'Host').
+ *
+ * @interface EventBindRecord
+ *
+ * @property {EventOptionMeta} option - The options for the event binding.
+ * This property specifies the configuration options for the event binding.
+ *
+ * @property {HTMLElement | Window | Document | ShadowRoot} element - The element to which the event is bound.
+ * This property specifies the DOM element or global object to which the event listener will be attached.
+ *
+ * @property {EventBindType} type - The type of event binding (e.g., 'Bind', 'Window', 'Host').
+ * This property specifies the type of event binding being used.
+ */
 export type EventBindRecord = {
   option: EventOptionMeta,
   element: HTMLElement | Window | Document | ShadowRoot,
   type: EventBindType
 }
 
+/**
+ * Collection of event bindings for a component.
+ *
+ * This type represents a map where the keys are event types (e.g., 'click', 'input')
+ * and the values are maps of event binding records. Each event binding record contains
+ * the event options, the element to which the event is bound, and the type of event binding.
+ *
+ * @type EventBindCollection
+ */
 export type EventBindCollection = Map<EventBindType, Map<string, EventBindRecord>>;
+
+
+/**
+ * Configuration object for defining a parameter in a custom element.
+ *
+ * This interface defines the structure for storing parameter details that are used
+ * by the `@Param` decorator to define parameters in custom elements. It includes
+ * the name of the parameter.
+ *
+ * @interface ParameterConfig
+ *
+ * @property {string} name - The name of the parameter.
+ * This property specifies the name of the parameter that is being defined.
+ *
+ * @example
+ * // Example of using ParameterConfig to store parameter information
+ * const paramConfig: ParameterConfig = {
+ *     name: 'myParam'
+ * };
+ */
+export interface ParameterConfig {
+  name: string
+}
