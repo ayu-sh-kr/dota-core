@@ -27,9 +27,9 @@ import {PropertyType} from "@dota/core/types/property.types.ts";
  *     selector: 'my-custom-element'
  * };
  */
-interface ComponentConfig {
-    selector: string;
-    shadow?: boolean
+export interface ComponentConfig {
+  selector: string;
+  shadow?: boolean
 }
 
 
@@ -57,9 +57,9 @@ interface ComponentConfig {
  *     }
  * };
  */
-interface MethodDetails {
-    name: string;
-    method: Function
+export interface MethodDetails {
+  name: string;
+  method: Function
 }
 
 
@@ -88,10 +88,10 @@ interface MethodDetails {
  *     params: ['param1', 'param2']
  * };
  */
-interface BindConfig {
-    event: string,
-    id: string,
-    params?: any[]
+export interface BindConfig {
+  event: string,
+  id: string,
+  params?: any[]
 }
 
 
@@ -121,10 +121,10 @@ interface BindConfig {
  *     type: String
  * };
  */
-interface PropertyConfig {
-    name: string;
-    default?: string;
-    type: PropertyType<any>
+export interface PropertyConfig {
+  name: string;
+  default?: string;
+  type: PropertyType<any>
 }
 
 
@@ -133,10 +133,10 @@ interface PropertyConfig {
  * @prop {string} name - name of the event
  * @prop {EventListenerOptions} options - option for extra configuration (optional && not available at the moment)
  */
-interface EventConfig {
-    name: string;
-    options?: EventListenerOptions;
-    type: EventType
+export interface EventConfig {
+  name: string;
+  options?: EventListenerOptions;
+  type: EventType
 }
 
 
@@ -172,11 +172,11 @@ interface EventConfig {
  *     type: String
  * };
  */
-interface PropertyDetails {
-    name: string
-    prototype: string
-    default?: any,
-    type: PropertyType<any>
+export interface PropertyDetails {
+  name: string
+  prototype: string
+  default?: any,
+  type: PropertyType<any>
 }
 
 /**
@@ -193,9 +193,9 @@ interface PropertyDetails {
  * // Example of using EventType to specify an event type
  * const eventType: EventType = EventType.WINDOW;
  */
-enum EventType {
-    WINDOW,
-    ROOT
+export enum EventType {
+  WINDOW,
+  ROOT
 }
 
 /**
@@ -219,9 +219,9 @@ enum EventType {
  *     propertyName: 'myEventProperty'
  * };
  */
-interface EventDetails {
-    eventName: string;
-    propertyName: string;
+export interface EventDetails {
+  eventName: string;
+  propertyName: string;
 }
 
 
@@ -244,8 +244,8 @@ interface EventDetails {
  *   }
  * }
  */
-interface EventOptions {
-    event: string | string[]
+export interface EventOptions {
+  event: string | string[]
 }
 
 
@@ -261,10 +261,10 @@ interface EventOptions {
  * @property {string} name - The name of the method to which event will be bounded.
  * @property {function} method - The method itself which is going to be bounded.
  */
-interface EventOptionMeta {
-    event: string | string[],
-    name: string
-    method: Function
+export interface EventOptionMeta {
+  event: string | string[],
+  name: string
+  method: Function
 }
 
 
@@ -285,15 +285,18 @@ interface EventOptionMeta {
  * @property {function} method - The method itself which is going to be called when the property changes.
  * This property holds a reference to the actual method function that will be called.
  */
-interface WatcherOptionMeta {
-    value: string | string[],
-    name: string
-    method: Function
+export interface WatcherOptionMeta {
+  value: string | string[],
+  name: string
+  method: Function
 }
 
-export type {
-    EventDetails, MethodDetails, PropertyDetails, PropertyConfig,
-    ComponentConfig, BindConfig, EventConfig, EventOptions,
-    EventOptionMeta, WatcherOptionMeta
+export type EventBindType = 'Bind' | 'Window' | 'Host' | 'Document';
+
+export type EventBindRecord = {
+  option: EventOptionMeta,
+  element: HTMLElement | Window | Document | ShadowRoot,
+  type: EventBindType
 }
-export {EventType}
+
+export type EventBindCollection = Map<EventBindType, Map<string, EventBindRecord>>;

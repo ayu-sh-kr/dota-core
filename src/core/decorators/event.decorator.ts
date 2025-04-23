@@ -22,17 +22,17 @@ import {EventDetails} from "@dota/core/types";
  * const element = new MyElement();
  * element.myEvent.emit('someEvent', { detail: 'event data' });
  */
-function EventDecorator(): PropertyDecorator {
-    return function (target: any, propertyKey: string | symbol) {
+function EventDecorator(name?: string): PropertyDecorator {
+  return function (target: any, propertyKey: string | symbol) {
 
-        let data = HelperUtils.fetchOrCreate<EventDetails>(target, 'Output')
+    let data = HelperUtils.fetchOrCreate<EventDetails>(target, 'Output')
 
-        const event = `on${capitalize(propertyKey.toString())}`
+    const event = name ? name : `on${capitalize(propertyKey.toString())}`;
 
-        const details: EventDetails = {eventName: event, propertyName: propertyKey.toString()}
+    const details: EventDetails = {eventName: event, propertyName: propertyKey.toString()}
 
-        data.set(propertyKey.toString(), details);
-    }
+    data.set(propertyKey.toString(), details);
+  }
 }
 
 /**
@@ -42,7 +42,7 @@ function EventDecorator(): PropertyDecorator {
  * @returns {string} - The capitalized string.
  */
 function capitalize(str: string): string {
-    return str.charAt(0).toUpperCase() + str.slice(1);
+  return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
 export {EventDecorator as Emitter, capitalize}

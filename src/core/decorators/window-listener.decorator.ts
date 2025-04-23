@@ -1,4 +1,4 @@
-import {EventOptions, HelperUtils, EventOptionMeta} from "@src/core";
+import {EventOptions, HelperUtils, EventOptionMeta} from "@dota/core";
 
 
 /**

@@ -1,447 +1,487 @@
 import {HelperUtils} from "@dota/core/helper";
-import {BindConfig, EventDetails, EventOptionMeta, MethodDetails, PropertyDetails} from "@dota/core/types";
+import {
+  BindConfig, EventDetails,
+  EventOptionMeta,
+  MethodDetails,
+  PropertyDetails
+} from "@dota/core/types";
 import {EventEmitter, Sanitizer} from "@dota/core/utils";
+import {EventManagerService} from "@dota/core/services";
 
 
 export abstract class BaseElement extends HTMLElement {
-    [key: string]: any
+  [key: string]: any
 
-    isShadow!: boolean;
+  isShadow!: boolean;
 
-    shadowRoot!: ShadowRoot;
+  shadowRoot!: ShadowRoot;
 
-    reactive = false;
+  reactive = false;
 
-    protected constructor() {
-        super();
+  private eventManagerService: EventManagerService<BaseElement>;
+
+  protected constructor() {
+    super();
+    this.eventManagerService = new EventManagerService(this);
+  }
+
+  /**
+   * Lifecycle method called when the component is added to the DOM.
+   *
+   * This method performs essential tasks synchronously and defers non-critical tasks
+   * using microtasks (via Promise.resolve()) to avoid blocking the main thread.
+   * 
+   * @method connectedCallback
+   */
+  connectedCallback() {
+    // Critical operations that should execute immediately
+    this.handleBeforeInit();
+    this.bindHTML();
+
+    const exposedMethods = this.exposeMethods();
+    const bindMethods = this.bindMethods();
+    const bindEmitter = this.bindEmitter();
+    const bindHostEvents = this.bindHostEvents();
+    const bindWindowEvents = this.bindWindowEvents();
+    const bindDocumentEvents = this.bindDocumentEvents();
+
+    Promise.all([exposedMethods, bindMethods, bindEmitter, bindHostEvents, bindWindowEvents, bindDocumentEvents])
+      .catch((reason) => console.error(reason));
+
+    this.handleAfterInit();
+  }
+
+  disconnectedCallback() {
+    const unbindMethods = this.unbindMethods();
+    const unbindHostEvents = this.unbindHostEvents();
+    const unbindWindowEvents = this.unbindWindowEvents();
+    const documentEvents = this.unbindDocumentEvents();
+
+    Promise.all([unbindMethods, unbindHostEvents, unbindWindowEvents, documentEvents])
+      .catch((reason) => console.error(reason));
+  }
+
+  abstract render(): string;
+
+  /**
+   * Updates the component's rendered HTML.
+   *
+   * This method re-renders the component's HTML content based on the current state.
+   * If the component uses a shadow DOM, it updates the shadow root's inner HTML.
+   * Otherwise, it updates the component's inner HTML. After updating the HTML,
+   * it re-binds the component's methods to their corresponding events.
+   *
+   * @method updateHTML
+   */
+  updateHTML() {
+    if (this.isShadow && this.shadowRoot) {
+      this.shadowRoot.innerHTML = this.render();
+    } else {
+      this.innerHTML = this.render();
+    }
+    this.bindMethods()
+      .catch((reason) => console.error(reason));
+  }
+
+
+  /**
+   * Called when an observed attribute changes.
+   *
+   * This method is invoked when one of the component's attributes, specified in the `observedAttributes` array, changes.
+   * It updates the component's properties and re-renders the component if the new value is different from the old value.
+   *
+   * @method attributeChangedCallback
+   * @param {string} name - The name of the attribute that changed.
+   * @param {string} oldValue - The old value of the attribute.
+   * @param {string} newValue - The new value of the attribute.
+   */
+  attributeChangedCallback(name: string, oldValue: any, newValue: any) {
+
+    if (!this.reactive) {
+      HelperUtils.bindReactive(this);
     }
 
-    /**
-     * Lifecycle method called when the component is added to the DOM.
-     *
-     * This method performs the following tasks:
-     * 1. Executes methods annotated with `@BeforeInit` decorator.
-     * 2. Exposes methods annotated with `@Expose` decorator to the global scope.
-     * 3. Binds the component's HTML content and events.
-     * 4. Binds the component's internal methods to their corresponding events.
-     * 5. Binds event emitters to the component's properties.
-     * 6. Binds the event related to host to its internal methods.
-     * 7. Bind the event on window to its internal methods.
-     * 8. Executed methods annotated with `@AfterInit`
-     * @method connectedCallback
-     */
-    connectedCallback() {
-
-        // handle before init
-        this.handleBeforeInit()
-
-        // Bind the HTML that is render the component
-        this.bindHTML()
-
-        // Expose the required method if annotated with @Expose
-        this.exposeMethods();
-
-        // Bind the events with the method of the component
-        this.bindMethods();
-
-        // Bind the event instance with an emitter
-        this.bindEmitter();
-
-        // Bind the events on the Host with internal method
-        this.bindHostEvents();
-
-        // Bind the events on the Window with internal method
-        this.bindWindowEvents();
-
-        // handle after init
-        this.handleAfterInit();
+    if (!newValue) {
+      return;
     }
 
-    disconnectedCallback() {
-        this.unbindMethods();
+    if (newValue !== oldValue) {
+      this.bindProperty(name, newValue);
+      this.updateHTML();
+    }
+  }
+
+  /**
+   * Sets the value of an attribute on the component and updates the corresponding property.
+   *
+   * This method overrides the default `setAttribute` method to ensure that the component's
+   * property is updated whenever an attribute is set. It assigns the provided value to the
+   * property with the same name as the attribute and then calls the superclasses `setAttribute`
+   * method to update the attribute on the DOM element.
+   *
+   * @param {number} qualifiedName - The name of the attribute to set.
+   * @param {number} value - The value to assign to the attribute.
+   */
+  setAttribute(qualifiedName: string, value: any) {
+    super.setAttribute(qualifiedName, value);
+  }
+
+  /**
+   * Executes methods annotated with `@BeforeInit` decorator before the component initializes.
+   *
+   * This method retrieves metadata associated with the component's constructor
+   * to find methods marked with the `@BeforeInit` decorator. It then invokes the
+   * `beforeInit` method if it exists in the metadata, allowing for any setup
+   * or initialization tasks to be performed before the component is fully initialized.
+   *
+   * @method handleBeforeInit
+   */
+  handleBeforeInit() {
+
+    let data: Map<string, Function> = HelperUtils.fetchOrCreate<Function>(this, 'Before')
+
+    const fun = data.get('beforeViewInit')
+
+    if (fun) {
+      fun.apply(this);
     }
 
-    abstract render(): string;
+  }
 
-    /**
-     * Updates the component's rendered HTML.
-     *
-     * This method re-renders the component's HTML content based on the current state.
-     * If the component uses a shadow DOM, it updates the shadow root's inner HTML.
-     * Otherwise, it updates the component's inner HTML. After updating the HTML,
-     * it re-binds the component's methods to their corresponding events.
-     *
-     * @method updateHTML
-     */
-    updateHTML() {
-        if (this.isShadow && this.shadowRoot) {
-            this.shadowRoot.innerHTML = this.render();
-        } else {
-            this.innerHTML = this.render();
+  /**
+   * Executes methods annotated with `@AfterInit` decorator after the component initializes.
+   *
+   * This method retrieves metadata associated with the component's constructor
+   * to find methods marked with the `@AfterInit` decorator. It then invokes the
+   * `afterInit` method if it exists in the metadata, allowing for any setup
+   * or initialization tasks to be performed after the component is fully initialized.
+   *
+   * @method handleAfterInit
+   */
+  private handleAfterInit() {
+
+    const data: Map<string, Function> = HelperUtils.fetchOrCreate<Function>(this, 'After');
+
+    const fun = data.get('afterViewInit')
+
+    if (fun) {
+      fun.apply(this);
+    }
+
+  }
+
+  /**
+   * Binds the component's `HTML` content and events based on metadata.
+   *
+   * This method retrieves metadata associated with the component's constructor
+   * to determine if the component should use a shadow DOM. It then sets the inner
+   * HTML of the component or its shadow root to the result of the `render` method.
+   * After setting the HTML, it binds events specified in the component's inner HTML
+   * to their corresponding methods.
+   *
+   * @method bindHTML
+   */
+  private bindHTML() {
+
+    this.isShadow = Reflect.getMetadata(this.constructor.name + ':' + 'shadow', this.constructor)
+
+    if (this.isShadow) {
+      this.shadowRoot = this.attachShadow({mode: "open"})
+    }
+
+    if (this.isShadow) {
+      if (this.shadowRoot) {
+        this.shadowRoot.innerHTML = this.render();
+      }
+    } else {
+      this.innerHTML = this.render();
+    }
+  }
+
+
+  /**
+   * Binds the component's internal events to its methods based on metadata.
+   *
+   * This method retrieves metadata associated with the component's constructor
+   * to find event binding configurations. It then binds the specified methods
+   * to the corresponding events on the elements identified by the metadata.
+   *
+   * @method bindMethods
+   */
+  private async bindMethods() {
+    let data = HelperUtils.fetchOrCreate<BindConfig>(this, 'Bind');
+    if (data) {
+      data.forEach((config, methodName) => {
+        const element: HTMLElement | null = this.isShadow ? this.shadowRoot.querySelector(config.id) : this.querySelector(config.id);
+        if (element) {
+          this.eventManagerService.bindEvent(element, {
+            event: config.event,
+            name: methodName,
+            method: this[methodName].bind(this)
+          }, 'Bind')
         }
-        this.bindMethods();
+      });
     }
+  }
 
+  /**
+   * Unbinds component's methods from their associated events.
+   *
+   * This method retrieves metadata associated with the component's constructor
+   * to find methods that were previously bound to events. It then removes the
+   * event listeners for these methods, effectively unbinding them.
+   *
+   * @method unbindMethods
+   */
+  private async unbindMethods() {
 
-    /**
-     * Called when an observed attribute changes.
-     *
-     * This method is invoked when one of the component's attributes, specified in the `observedAttributes` array, changes.
-     * It updates the component's properties and re-renders the component if the new value is different from the old value.
-     *
-     * @method attributeChangedCallback
-     * @param {string} name - The name of the attribute that changed.
-     * @param {string} oldValue - The old value of the attribute.
-     * @param {string} newValue - The new value of the attribute.
-     */
-    attributeChangedCallback(name: string, oldValue: any, newValue: any) {
+    const data = HelperUtils.fetchOrCreate<BindConfig>(this, 'Bind')
 
-        if (!this.reactive) {
-            HelperUtils.bindReactive(this);
+    if (!data) return;
+
+    data.forEach((config: BindConfig, method: string) => {
+      const element: HTMLElement | null = this.querySelector(config.id);
+      if (!element) return;
+      this.eventManagerService.unbindEvent(element, {
+        event: config.event,
+        name: method,
+        method: this[method].bind(this)
+      }, 'Bind');
+    });
+  }
+
+  /**
+   * Exposes component methods to the global scope.
+   *
+   * This method retrieves metadata associated with the component's constructor
+   * to find methods marked for exposure. It then binds these methods to the global
+   * `window` object, making them accessible globally.
+   *
+   * @method exposeMethods
+   */
+  private async exposeMethods() {
+
+    let data = HelperUtils.fetchOrCreate<MethodDetails>(this, 'Exposed')
+
+    if (data) {
+      data.forEach((value, key) => {
+        if (typeof window !== "undefined") {
+          if (!(window as any)[key]) {
+            (window as any)[key] = value.method.bind(this);
+          }
         }
-
-        if (!newValue) {
-            return;
-        }
-
-        if (newValue !== oldValue) {
-            this.bindProperty(name, newValue);
-            this.updateHTML();
-        }
+      });
     }
+  }
 
-    /**
-     * Sets the value of an attribute on the component and updates the corresponding property.
-     *
-     * This method overrides the default `setAttribute` method to ensure that the component's
-     * property is updated whenever an attribute is set. It assigns the provided value to the
-     * property with the same name as the attribute and then calls the superclasses `setAttribute`
-     * method to update the attribute on the DOM element.
-     *
-     * @param {number} qualifiedName - The name of the attribute to set.
-     * @param {number} value - The value to assign to the attribute.
-     */
-    setAttribute(qualifiedName: string, value: any) {
-        super.setAttribute(qualifiedName, value);
+
+  /**
+   * Binds a component's property to a new value based on metadata.
+   *
+   * This method is called by `attributeChangedCallback` to update the component's
+   * properties when an attribute changes. It retrieves metadata associated with
+   * the component's constructor to find property details and assigns the new value
+   * to the corresponding property.
+   *
+   * @method bindProperty
+   * @param {string} name - The name of the attribute that changed.
+   * @param {string} value - The new value of the attribute.
+   */
+  private bindProperty(name: string, value: any) {
+
+    let data: Map<string, PropertyDetails> = HelperUtils.fetchOrCreate<PropertyDetails>(this, 'Property')
+
+    if (data) {
+      let property = data.get(name);
+
+      if (property) {
+        this[property.prototype] = Sanitizer.sanitize(value, property.type);
+        return;
+      }
     }
+  }
 
-    /**
-     * Executes methods annotated with `@BeforeInit` decorator before the component initializes.
-     *
-     * This method retrieves metadata associated with the component's constructor
-     * to find methods marked with the `@BeforeInit` decorator. It then invokes the
-     * `beforeInit` method if it exists in the metadata, allowing for any setup
-     * or initialization tasks to be performed before the component is fully initialized.
-     *
-     * @method handleBeforeInit
-     */
-    handleBeforeInit() {
+  /**
+   * Binds event emitters to the component's properties based on metadata.
+   *
+   * This method retrieves metadata associated with the component's constructor
+   * to find event details and binds an `EventEmitter` instance to each property
+   * specified in the metadata. The event name is derived from the metadata.
+   *
+   * @method bindEmitter
+   */
+  private async bindEmitter() {
 
-        let data: Map<string, Function> = HelperUtils.fetchOrCreate<Function>(this, 'Before')
+    let data = HelperUtils.fetchOrCreate<EventDetails>(this, 'Output')
 
-        const fun = data.get('beforeViewInit')
+    if (!data) return;
 
-        if (fun) {
-            fun.apply(this);
-        }
-
-    }
-
-    /**
-     * Executes methods annotated with `@AfterInit` decorator after the component initializes.
-     *
-     * This method retrieves metadata associated with the component's constructor
-     * to find methods marked with the `@AfterInit` decorator. It then invokes the
-     * `afterInit` method if it exists in the metadata, allowing for any setup
-     * or initialization tasks to be performed after the component is fully initialized.
-     *
-     * @method handleAfterInit
-     */
-    handleAfterInit() {
-
-        let data: Map<string, Function> = HelperUtils.fetchOrCreate<Function>(this, 'After');
-
-        let fun = data.get('afterViewInit')
-
-        if (fun) {
-            fun.apply(this);
-        }
-
-    }
-
-    /**
-     * Binds the component's `HTML` content and events based on metadata.
-     *
-     * This method retrieves metadata associated with the component's constructor
-     * to determine if the component should use a shadow DOM. It then sets the inner
-     * HTML of the component or its shadow root to the result of the `render` method.
-     * After setting the HTML, it binds events specified in the component's inner HTML
-     * to their corresponding methods.
-     *
-     * @method bindHTML
-     */
-    bindHTML() {
-
-        let methods: MethodDetails[] = Reflect.getMetadata(this.constructor.name, this.constructor);
-
-        this.isShadow = Reflect.getMetadata(this.constructor.name + ':' + 'shadow', this.constructor)
-
-        if (this.isShadow) {
-            this.shadowRoot = this.attachShadow({mode: "open"})
-        }
-
-        if (this.isShadow) {
-            if (this.shadowRoot) {
-                this.shadowRoot.innerHTML = this.render();
-                this.bindEvents(this, methods);
-            }
-        } else {
-            this.innerHTML = this.render();
-            this.bindEvents(this, methods);
-        }
-    }
+    data.forEach((value: EventDetails, key: string) => {
+      this[key] = new EventEmitter(value.eventName)
+    })
+  }
 
 
-    /**
-     * Binds events specified in the component's inner HTML to their corresponding methods.
-     *
-     * This method searches the component's inner HTML for event bindings in the format
-     * `@event="{method}"`. It then attaches event listeners to the elements matching
-     * these bindings, ensuring that the specified methods are called when the events
-     * are triggered.
-     *
-     * @method bindEvents
-     * @param {HTMLElement | ShadowRoot} root - The root element to search for event bindings.
-     * @param {MethodDetails[]} methods - An array of method details to bind to the events.
-     */
-    bindEvents(root: HTMLElement | ShadowRoot, methods: MethodDetails[]) {
+  /**
+   * Binds host events to the component's methods based on metadata.
+   *
+   * This method retrieves metadata associated with the component's constructor
+   * to find host event configurations. It then binds the specified methods
+   * to the corresponding events on the host element or its shadow root. If the event is
+   * a string, it adds a single event listener. If the event is an array of strings,
+   * it traverses the array and adds event listeners for each event.
+   *
+   * @method bindHostEvents
+   *
+   * @example
+   * // Example of using bindHostEvents to bind host events
+   * class MyComponent extends BaseElement {
+   *   \@HostListener({ event: 'click' })
+   *   public handleClick(event: Event) {
+   *     console.log('Host element clicked', event);
+   *   }
+   * }
+   *
+   * const myComponent = new MyComponent();
+   * myComponent.bindHostEvents();
+   * // The click event on the host element will now trigger the handleClick method
+   */
+  private async bindHostEvents() {
+    const data = HelperUtils.fetchOrCreate<EventOptionMeta>(this, 'Host');
 
-        const eventPattern = /@(\w+)="{(\w+)}"/g;
+    if (!data) return;
 
-        for (const match of root.innerHTML.matchAll(eventPattern)) {
-            const eventName = match[1];
-            const methodName = match[2];
-            const methodDetail = methods.find(m => m.name === methodName);
+    data.forEach((value: EventOptionMeta) => {
+      const element = this.isShadow ? this.shadowRoot : this;
+      if (element) {
+        this.eventManagerService.bindEvent(element, value, 'Host');
+      }
+    });
+  }
 
-            if (methodDetail) {
-                const elements = root.querySelectorAll(`[\\@${eventName}="{${methodName}}"]`);
-                elements.forEach(element => {
-                    element.addEventListener(eventName, methodDetail.method.bind(this));
-                });
-            }
-        }
-    }
+  /**
+   * Unbinds host events from the component's methods.
+   *
+   * This method retrieves metadata associated with the component's constructor
+   * to find host event configurations that were previously bound. It then removes
+   * the event listeners from the host element or its shadow root.
+   *
+   * @method unbindHostEvents
+   */
+  private async unbindHostEvents() {
+    const data = HelperUtils.fetchOrCreate<EventOptionMeta>(this, 'Host');
 
-    /**
-     * Binds the component's internal events to its methods based on metadata.
-     *
-     * This method retrieves metadata associated with the component's constructor
-     * to find event binding configurations. It then binds the specified methods
-     * to the corresponding events on the elements identified by the metadata.
-     *
-     * @method bindMethods
-     */
-    bindMethods() {
-        let data = HelperUtils.fetchOrCreate<BindConfig>(this, 'Bind');
-        if (data) {
-            data.forEach((config, methodName) => {
-                const element = this.isShadow ? this.shadowRoot.querySelector(config.id) : this.querySelector(config.id);
-                if (element) {
-                    const method = this[methodName];
-                    if (config.params) {
-                        // If params are provided, create a wrapper function to include them.
-                        const boundMethodWithParams = (event: Event, ...args: any[]) => method.apply(this, event, [...config.params!, ...args]);
-                        element.addEventListener(config.event, boundMethodWithParams);
-                    } else {
-                        // If no params are provided, bind the method directly.
-                        element.addEventListener(config.event, method.bind(this));
-                    }
-                }
-            });
-        }
-    }
+    if (!data) return;
 
-    /**
-     * Unbinds component's methods from their associated events.
-     *
-     * This method retrieves metadata associated with the component's constructor
-     * to find methods that were previously bound to events. It then removes the
-     * event listeners for these methods, effectively unbinding them.
-     *
-     * @method unbindMethods
-     */
-    unbindMethods() {
+    data.forEach((option: EventOptionMeta) => {
+      const element = this.isShadow ? this.shadowRoot : this;
 
-        const data = HelperUtils.fetchOrCreate<BindConfig>(this, 'Bind')
-
-        if (!data) return;
-
-        data.forEach((config: BindConfig) => {
-            const element = this.querySelector(config.id);
-
-            if (!element) return;
-            element.removeEventListener(config.event, () => {
-            });
-        })
-
-    }
-
-    /**
-     * Exposes component methods to the global scope.
-     *
-     * This method retrieves metadata associated with the component's constructor
-     * to find methods marked for exposure. It then binds these methods to the global
-     * `window` object, making them accessible globally.
-     *
-     * @method exposeMethods
-     */
-    exposeMethods() {
-
-        let data = HelperUtils.fetchOrCreate<MethodDetails>(this, 'Exposed')
-
-        if (data) {
-            data.forEach((value, key) => {
-                if (typeof window !== "undefined") {
-                    if (!(window as any)[key]) {
-                        (window as any)[key] = value.method.bind(this);
-                    }
-                }
-            });
-        }
-    }
+      if (element) {
+        this.eventManagerService.unbindEvent(element, option, 'Host');
+      }
+    });
+  }
 
 
-    /**
-     * Binds a component's property to a new value based on metadata.
-     *
-     * This method is called by `attributeChangedCallback` to update the component's
-     * properties when an attribute changes. It retrieves metadata associated with
-     * the component's constructor to find property details and assigns the new value
-     * to the corresponding property.
-     *
-     * @method bindProperty
-     * @param {string} name - The name of the attribute that changed.
-     * @param {string} value - The new value of the attribute.
-     */
-    bindProperty(name: string, value: any) {
+  /**
+   * Binds window events to the component's methods based on metadata.
+   *
+   * This method retrieves metadata associated with the component's constructor
+   * to find window event configurations. It then binds the specified methods
+   * to the corresponding events on the global `window` object. If the event is
+   * a string, it adds a single event listener. If the event is an array of strings,
+   * it traverses the array and adds event listeners for each event.
+   *
+   * @method bindWindowEvents
+   *
+   * @example
+   * // Example of using bindWindowEvents to bind window events
+   * class MyComponent extends BaseElement {
+   *   \@WindowListener({ event: 'resize' })
+   *   public handleResize(event: Event) {
+   *     console.log('Window resized', event);
+   *   }
+   * }
+   *
+   * const myComponent = new MyComponent();
+   * myComponent.bindWindowEvents();
+   * // The resize event on the window will now trigger the handleResize method
+   */
+  private async bindWindowEvents() {
+    const data = HelperUtils.fetchOrCreate<EventOptionMeta>(this, 'Window');
 
-        let data: Map<string, PropertyDetails> = HelperUtils.fetchOrCreate<PropertyDetails>(this, 'Property')
+    if (!data) return;
 
-        if (data) {
-            let property = data.get(name);
+    data.forEach((value: EventOptionMeta) => {
+      this.eventManagerService.bindEvent(window, value, 'Window');
+    })
+  }
 
-            if (property) {
-                this[property.prototype] = Sanitizer.sanitize(value, property.type);
-                return;
-            }
-        }
-    }
+  /**
+   * Unbinds window events from the component's methods.
+   *
+   * This method retrieves metadata associated with the component's constructor
+   * to find window event configurations that were previously bound. It then removes
+   * the event listeners from the global `window` object.
+   *
+   * @method unbindWindowEvents
+   */
+  private async unbindWindowEvents() {
+    const data = HelperUtils.fetchOrCreate<EventOptionMeta>(this, 'Window');
 
-    /**
-     * Binds event emitters to the component's properties based on metadata.
-     *
-     * This method retrieves metadata associated with the component's constructor
-     * to find event details and binds an `EventEmitter` instance to each property
-     * specified in the metadata. The event name is derived from the metadata.
-     *
-     * @method bindEmitter
-     */
-    bindEmitter() {
+    if (!data) return;
 
-        let data = HelperUtils.fetchOrCreate<EventDetails>(this, 'Output')
-
-        if (!data) return;
-
-        data.forEach((value: EventDetails, key: string) => {
-            this[key] = new EventEmitter(value.eventName)
-        })
-    }
-
-
-    /**
-     * Binds host events to the component's methods based on metadata.
-     *
-     * This method retrieves metadata associated with the component's constructor
-     * to find host event configurations. It then binds the specified methods
-     * to the corresponding events on the host element or its shadow root. If the event is
-     * a string, it adds a single event listener. If the event is an array of strings,
-     * it traverses the array and adds event listeners for each event.
-     *
-     * @method bindHostEvents
-     *
-     * @example
-     * // Example of using bindHostEvents to bind host events
-     * class MyComponent extends BaseElement {
-     *   \@HostListener({ event: 'click' })
-     *   public handleClick(event: Event) {
-     *     console.log('Host element clicked', event);
-     *   }
-     * }
-     *
-     * const myComponent = new MyComponent();
-     * myComponent.bindHostEvents();
-     * // The click event on the host element will now trigger the handleClick method
-     */
-    bindHostEvents() {
-        const data = HelperUtils.fetchOrCreate<EventOptionMeta>(this, 'Host');
-
-        if (!data) return;
-
-        data.forEach((value: EventOptionMeta) => {
-            const element = this.isShadow ? this.shadowRoot : this;
-
-            if (element) {
-                if (typeof value.event === 'string') {
-                    element.addEventListener(value.event, (event: Event) => value.method.call(this, event))
-                } else if (Array.isArray(value.event)) {
-                    value.event.forEach((eventName) => {
-                        element.addEventListener(eventName, (event: Event) => value.method.call(this, event))
-                    })
-                }
-            }
-
-        })
-    }
+    data.forEach((value: EventOptionMeta) => {
+      if (typeof value.event === 'string') {
+        window.removeEventListener(value.event, (event: Event) => value.method.call(this, event));
+      } else if (Array.isArray(value.event)) {
+        value.event.forEach((eventName) => {
+          window.removeEventListener(eventName, (event: Event) => value.method.call(this, event));
+        });
+      }
+    });
+  }
 
 
-    /**
-     * Binds window events to the component's methods based on metadata.
-     *
-     * This method retrieves metadata associated with the component's constructor
-     * to find window event configurations. It then binds the specified methods
-     * to the corresponding events on the global `window` object. If the event is
-     * a string, it adds a single event listener. If the event is an array of strings,
-     * it traverses the array and adds event listeners for each event.
-     *
-     * @method bindWindowEvents
-     *
-     * @example
-     * // Example of using bindWindowEvents to bind window events
-     * class MyComponent extends BaseElement {
-     *   \@WindowListener({ event: 'resize' })
-     *   public handleResize(event: Event) {
-     *     console.log('Window resized', event);
-     *   }
-     * }
-     *
-     * const myComponent = new MyComponent();
-     * myComponent.bindWindowEvents();
-     * // The resize event on the window will now trigger the handleResize method
-     */
-    bindWindowEvents() {
-        const data = HelperUtils.fetchOrCreate<EventOptionMeta>(this, 'Window');
+  /**
+   * Binds document events to the component's methods based on metadata.
+   *
+   * This method retrieves metadata associated with the component's constructor
+   * to find document event configurations. It then binds the specified methods
+   * to the corresponding events on the global `document` object. If the event is
+   * a string, it adds a single event listener. If the event is an array of strings,
+   * it traverses the array and adds event listeners for each event.
+   *
+   * @method bindDocumentEvents
+   */
+  private async bindDocumentEvents() {
+    const data = HelperUtils.fetchOrCreate<EventOptionMeta>(this, 'Document');
 
-        if (!data) return;
+    if (!data) return;
 
-        data.forEach((value: EventOptionMeta) => {
-            if (typeof value.event === 'string') {
-                window.addEventListener(value.event, (event: Event) => value.method.call(this, event))
-            } else if (Array.isArray(value.event)) {
-                value.event.forEach((eventName) => {
-                    window.addEventListener(eventName, (event: Event) => value.method.call(this, event))
-                })
-            }
-        })
-    }
+    data.forEach((value: EventOptionMeta) => {
+      this.eventManagerService.bindEvent(document, value, 'Document');
+    })
+  }
+
+  /**
+   * Unbinds document events from the component's methods.
+   *
+   * This method retrieves metadata associated with the component's constructor
+   * to find document event configurations that were previously bound. It then removes
+   * the event listeners from the global `document` object.
+   *
+   * @method unbindDocumentEvents
+   */
+  private async unbindDocumentEvents() {
+    const data = HelperUtils.fetchOrCreate<EventOptionMeta>(this, 'Document');
+
+    if (!data) return;
+
+    data.forEach((value: EventOptionMeta) => {
+      this.eventManagerService.unbindEvent(document, value, 'Document');
+    });
+  }
+
 
 }

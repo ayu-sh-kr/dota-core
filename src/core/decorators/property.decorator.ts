@@ -24,22 +24,22 @@ import {HelperUtils} from "@dota/core/helper";
  * element.myProperty = 'new value';
  * console.log(element.myProperty); // Output: 'new value'
  */
-function PropertyDecorator(config: PropertyConfig): PropertyDecorator{
-    return function (target: any, propertyKey: string | symbol){
+function PropertyDecorator(config: PropertyConfig): PropertyDecorator {
+  return function (target: any, propertyKey: string | symbol) {
 
-        if(!target.constructor.observedAttributes) {
-            target.constructor.observedAttributes = [];
-        }
-
-        target.constructor.observedAttributes.push(config.name);
-
-        let data = HelperUtils.fetchOrCreate<PropertyDetails>(target, 'Property');
-
-        data.set(
-            config.name,
-            {name: config.name, prototype: propertyKey.toString(), default: config.default, type: config.type}
-        )
+    if (!target.constructor.observedAttributes) {
+      target.constructor.observedAttributes = [];
     }
+
+    target.constructor.observedAttributes.push(config.name);
+
+    let data = HelperUtils.fetchOrCreate<PropertyDetails>(target, 'Property');
+
+    data.set(
+      config.name,
+      {name: config.name, prototype: propertyKey.toString(), default: config.default, type: config.type}
+    )
+  }
 }
 
 export {PropertyDecorator as Property}

@@ -22,19 +22,17 @@ import {EventOptions, HelperUtils, EventOptionMeta} from "@dota/core";
  * // The click event on the host element will now trigger the handleClick method
  */
 function HostListenerDecorator(options: EventOptions): MethodDecorator {
-    return function (target: any, propertyKey: string | symbol, descriptor: PropertyDescriptor) {
-        const data = HelperUtils.fetchOrCreate<EventOptionMeta>(target, 'Host')
-        data.set(propertyKey.toString(), {
-            event: options.event,
-            name: propertyKey.toString(),
-            method: descriptor.value
-        });
+  return function (target: any, propertyKey: string | symbol, descriptor: PropertyDescriptor) {
+    const data = HelperUtils.fetchOrCreate<EventOptionMeta>(target, 'Host')
+    data.set(propertyKey.toString(), {
+      event: options.event,
+      name: propertyKey.toString(),
+      method: descriptor.value
+    });
 
-        return descriptor;
-    }
+    return descriptor;
+  }
 }
-
-
 
 
 export {HostListenerDecorator as HostListener}

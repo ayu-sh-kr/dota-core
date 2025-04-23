@@ -22,14 +22,14 @@ import {HelperUtils} from "@dota/core/helper";
  * document.body.appendChild(element);
  */
 function BeforeInitDecorator(): MethodDecorator {
-    return function (target: any, propertyKey: string | any, descriptor: PropertyDescriptor) {
+  return function (target: any, propertyKey: string | any, descriptor: PropertyDescriptor) {
 
-        let data = HelperUtils.fetchOrCreate<Function>(target, 'Before');
+    let data = HelperUtils.fetchOrCreate<Function>(target, 'Before');
 
-        data.set(propertyKey.toString(), descriptor.value);
+    data.set(propertyKey.toString(), descriptor.value);
 
-        return descriptor;
-    }
+    return descriptor;
+  }
 }
 
-export { BeforeInitDecorator as BeforeInit }
+export {BeforeInitDecorator as BeforeInit}

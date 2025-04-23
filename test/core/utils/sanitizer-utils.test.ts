@@ -1,4 +1,4 @@
-import {Boolean, FunctionT, Number, Object, Sanitizer, String} from "@src/core";
+import {Boolean, FunctionT, Number, Object, Sanitizer, String} from "@dota/core";
 
 
 describe('Sanitizer Utils', () => {

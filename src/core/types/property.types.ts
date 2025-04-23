@@ -1,4 +1,3 @@
-
 /**
  * Represents a type that processes a value into a specific type `T`.
  *
@@ -38,7 +37,7 @@
  * });
  */
 export type PropertyType<T> = {
-    process: (value: any) => T;
+  process: (value: any) => T;
 }
 
 
@@ -68,12 +67,12 @@ export type PropertyType<T> = {
  * }
  */
 const StringType: PropertyType<string> = {
-    process: (value: any) => {
-        if (value === null || value === undefined) {
-            throw new Error(`Value is not of given type: ${value}`);
-        }
-        return String(value);
+  process: (value: any) => {
+    if (value === null || value === undefined) {
+      throw new Error(`Value is not of given type: ${value}`);
     }
+    return String(value);
+  }
 }
 
 /**
@@ -102,15 +101,15 @@ const StringType: PropertyType<string> = {
  * }
  */
 const NumberType: PropertyType<number> = {
-    process: (value: any) => {
-        if (typeof value === 'boolean') {
-            throw new Error(`Value is not of type number: ${value}`);
-        }
-       const result = Number(value)
-        if(isNaN(result))
-            throw new Error(`Value is not of type number: ${value}`)
-        return result;
+  process: (value: any) => {
+    if (typeof value === 'boolean') {
+      throw new Error(`Value is not of type number: ${value}`);
     }
+    const result = Number(value)
+    if (isNaN(result))
+      throw new Error(`Value is not of type number: ${value}`)
+    return result;
+  }
 }
 
 /**
@@ -139,14 +138,14 @@ const NumberType: PropertyType<number> = {
  * }
  */
 const BooleanType: PropertyType<boolean> = {
-    process: (value: any) => {
-        if(value === "false") {
-            return false;
-        } else if(value === "true") {
-            return true;
-        }
-        throw new Error(`Value is not of type boolean: ${value}`);
+  process: (value: any) => {
+    if (value === "false") {
+      return false;
+    } else if (value === "true") {
+      return true;
     }
+    throw new Error(`Value is not of type boolean: ${value}`);
+  }
 }
 
 /**
@@ -183,16 +182,16 @@ const BooleanType: PropertyType<boolean> = {
  * }
  */
 const ObjectType: PropertyType<object> = {
-    process: (value: any) => {
-        if (typeof value !== 'string') {
-            throw new Error(`Value is not of given type: ${value}`);
-        }
-        try {
-            return JSON.parse(value);
-        } catch (e) {
-            throw new Error(`Value is not of given type: ${value}`);
-        }
+  process: (value: any) => {
+    if (typeof value !== 'string') {
+      throw new Error(`Value is not of given type: ${value}`);
     }
+    try {
+      return JSON.parse(value);
+    } catch (e) {
+      throw new Error(`Value is not of given type: ${value}`);
+    }
+  }
 }
 
 /**
@@ -221,22 +220,28 @@ const ObjectType: PropertyType<object> = {
  * }
  */
 const FunctionType: PropertyType<Function> = {
-    process: (value: any) => {
+  process: (value: any) => {
 
-        if(typeof value === "function") {
-            return value
-        }
-
-        if (typeof value !== 'string') {
-            throw new Error(`Value is not of given type: ${value}`);
-        }
-
-        try {
-            return Function('return ' + value)();
-        } catch (e) {
-            throw new Error(`Value is not of given type: ${value}`);
-        }
+    if (typeof value === "function") {
+      return value
     }
+
+    if (typeof value !== 'string') {
+      throw new Error(`Value is not of given type: ${value}`);
+    }
+
+    try {
+      return Function('return ' + value)();
+    } catch (e) {
+      throw new Error(`Value is not of given type: ${value}`);
+    }
+  }
 }
 
-export {StringType as String, NumberType as Number, BooleanType as Boolean, ObjectType as Object, FunctionType as FunctionT}
+export {
+  StringType as String,
+  NumberType as Number,
+  BooleanType as Boolean,
+  ObjectType as Object,
+  FunctionType as FunctionT
+}

@@ -23,14 +23,14 @@ import {MethodDetails} from "@dota/core/types";
  * instance.myMethod(); // Output: This method is exposed
  */
 function ExposeDecorator(): MethodDecorator {
-    return function (target: any, propertyKey: string | symbol, descriptor: PropertyDescriptor) {
+  return function (target: any, propertyKey: string | symbol, descriptor: PropertyDescriptor) {
 
-        let data = HelperUtils.fetchOrCreate<MethodDetails>(target, 'Exposed')
+    let data = HelperUtils.fetchOrCreate<MethodDetails>(target, 'Exposed')
 
-        data.set(propertyKey.toString(), {name: propertyKey.toString(), method: descriptor.value});
+    data.set(propertyKey.toString(), {name: propertyKey.toString(), method: descriptor.value});
 
-        return descriptor;
-    }
+    return descriptor;
+  }
 }
 
 export {ExposeDecorator as Expose}

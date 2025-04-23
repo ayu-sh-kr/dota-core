@@ -1,4 +1,4 @@
-import {Number, String, Boolean, Object, FunctionT} from "@src/core";
+import {Number, String, Boolean, Object, FunctionT} from "@dota/core";
 
 
 describe('StringType', () => {

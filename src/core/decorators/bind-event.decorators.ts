@@ -27,13 +27,13 @@ import {HelperUtils} from "@dota/core/helper";
  * // Clicking the button with id 'myButton' will trigger the handleClick method
  */
 function BindEventDecorator(config: BindConfig): MethodDecorator {
-    return function (target: any, propertyKey: string | symbol, descriptor: PropertyDescriptor) {
+  return function (target: any, propertyKey: string | symbol, descriptor: PropertyDescriptor) {
 
-        let data = HelperUtils.fetchOrCreate<BindConfig>(target, 'Bind');
-        data.set(propertyKey.toString(), config);
+    let data = HelperUtils.fetchOrCreate<BindConfig>(target, 'Bind');
+    data.set(propertyKey.toString(), config);
 
-        return descriptor;
-    }
+    return descriptor;
+  }
 }
 
 export {BindEventDecorator as BindEvent}
