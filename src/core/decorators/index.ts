@@ -12,3 +12,4 @@ export {Watcher} from "@dota/core/decorators/watcher.decorator.ts";
 export {DocumentListener} from "@dota/core/decorators/document-listener.decorator.ts";
 export {Param} from "@dota/core/decorators/param.decorator.ts";
 export {State} from "@dota/core/decorators/state.decorator.ts";
+export {Element} from "@dota/core/decorators/element.decorator.ts";
