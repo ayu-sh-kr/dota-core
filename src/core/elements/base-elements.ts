@@ -1,6 +1,6 @@
 import {HelperUtils} from "@dota/core/helper";
 import {
-  BindConfig, EventDetails,
+  BindConfig, ElementConfigInternal, EventDetails,
   EventOptionMeta,
   MethodDetails, ParameterConfig,
   PropertyDetails, StateConfig
@@ -46,10 +46,12 @@ export abstract class BaseElement extends HTMLElement {
     const bindDocumentEvents = this.bindDocumentEvents();
     const bindParameters = this.bindParameters();
     const bindState = this.bindState(this);
+    const bindElements = this.bindElements();
 
     Promise.all([
       exposedMethods, bindMethods, bindEmitter, bindHostEvents,
-      bindWindowEvents, bindDocumentEvents, bindParameters, bindState
+      bindWindowEvents, bindDocumentEvents, bindParameters, bindState,
+      bindElements
     ])
       .catch((reason) => console.error(reason));
 
@@ -84,7 +86,10 @@ export abstract class BaseElement extends HTMLElement {
     } else {
       this.innerHTML = this.render();
     }
-    this.bindMethods()
+    const bindMethods = this.bindMethods();
+    const bindElements = this.bindElements();
+
+    Promise.all([bindMethods, bindElements])
       .catch((reason) => console.error(reason));
   }
 
@@ -171,6 +176,7 @@ export abstract class BaseElement extends HTMLElement {
 
     if (fun) {
       fun.apply(this);
+      this.updateHTML();
     }
 
   }
@@ -543,6 +549,33 @@ export abstract class BaseElement extends HTMLElement {
         configurable: true
       });
     });
+  }
+
+  /**
+   * Binds elements to the component's properties based on metadata.
+   *
+   * This method retrieves metadata associated with the component's constructor
+   * to find element configurations. It then binds the specified elements to
+   * the corresponding properties on the component, allowing for easy access
+   * to DOM elements within the component.
+   *
+   * @method bindElements
+   */
+  private async bindElements() {
+    const data = HelperUtils.fetchOrCreate<ElementConfigInternal>(this, 'Element');
+    if (!data) return;
+
+    data.forEach((value) => {
+      let selector = '';
+      if (value.by === 'id') selector = `#${value.selector}`;
+      if (value.by === 'class') selector = `.${value.selector}`;
+      if (value.by === 'tag') selector = value.selector;
+      if (this.isShadow) {
+        this[value.property] = this.shadowRoot.querySelector(selector)
+        return;
+      }
+      this[value.property] = this.querySelector(selector)
+    })
   }
 
 

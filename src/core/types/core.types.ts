@@ -360,6 +360,83 @@ export interface ParameterConfig {
 }
 
 
+/**
+ * Configuration object for defining a state in a custom element.
+ *
+ * This interface defines the structure for storing state details that are used
+ * by the `@State` decorator to define states in custom elements. It includes
+ * the prototype of the state.
+ *
+ * @interface StateConfig
+ *
+ * @property {string} prototype - The prototype of the state.
+ * This property specifies the prototype of the state that is being defined.
+ *
+ * @example
+ * // Example of using StateConfig to store state information
+ * const stateConfig: StateConfig = {
+ *     prototype: 'myState'
+ * };
+ */
 export interface StateConfig {
   prototype: string
+}
+
+/**
+ * Configuration object for defining an element in a custom element.
+ *
+ * This interface defines the structure for storing element details that are used
+ * by the `@Element` decorator to define elements in custom elements. It includes
+ * the selector and the method of selecting the element (e.g., 'id', 'tag', 'class').
+ *
+ * @interface ElementConfig
+ *
+ * @property {string} selector - The selector for the element.
+ * This property specifies the selector used to identify the element.
+ *
+ * @property {'id' | 'tag' | 'class'} by - The method of selecting the element.
+ * This property specifies the method used to select the element (e.g., 'id', 'tag', 'class').
+ *
+ * @example
+ * // Example of using ElementConfig to store element information
+ * const elementConfig: ElementConfig = {
+ *     selector: '#myElement',
+ *     by: 'id'
+ * };
+ */
+export interface ElementConfig {
+  selector: string;
+  by: 'id' | 'tag' | 'class'
+}
+
+/**
+ * Configuration object for defining an element in a custom element.
+ *
+ * This interface defines the structure for storing element details that are used
+ * by the `@Element` decorator to define elements in custom elements. It includes
+ * the selector and the method of selecting the element (e.g., 'id', 'tag', 'class').
+ *
+ * @interface ElementConfigInternal
+ *
+ * @property {string} selector - The selector for the element.
+ * This property specifies the selector used to identify the element.
+ *
+ * @property {'id' | 'tag' | 'class'} by - The method of selecting the element.
+ * This property specifies the method used to select the element (e.g., 'id', 'tag', 'class').
+ *
+ * @property {string} property - The name of the property in the class.
+ * This property specifies the name of the property in the class that corresponds to the element.
+ *
+ * @example
+ * // Example of using ElementConfigInternal to store element information
+ * const elementConfigInternal: ElementConfigInternal = {
+ *     selector: '#myElement',
+ *     by: 'id',
+ *     property: 'myElementProperty'
+ * };
+ */
+export interface ElementConfigInternal {
+  selector: string;
+  by: 'id' | 'tag' | 'class';
+  property: string;
 }
