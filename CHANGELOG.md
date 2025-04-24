@@ -1,5 +1,11 @@
 # @ayu-sh-kr/dota-core
 
+## 1.7.1
+
+### Patch Changes
+
+- 316293c: Add new decorator @Element to bind components Element to its property
+
 ## 1.7.0
 
 ### Minor Changes
