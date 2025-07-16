@@ -27,10 +27,11 @@ export class EventEmitter<T> {
    *
    * @param {T} data - The data to be included in the event's detail.
    * @param {HTMLElement} [root] - The root element from which to dispatch the event. If not provided, the event is dispatched from the window.
+   * @param {boolean} [bubbles=false] - Indicates whether the event should bubble up through the DOM. Defaults to `false`.
    */
-  emit(data: T, root?: HTMLElement) {
+  emit(data: T, root?: HTMLElement, bubbles: boolean = false): void {
     const event = new CustomEvent<T>(this.name, {
-      bubbles: true,
+      bubbles: bubbles,
       detail: data
     })
 

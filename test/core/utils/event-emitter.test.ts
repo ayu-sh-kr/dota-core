@@ -46,7 +46,7 @@ describe('EventEmitter', () => {
         const rootElement = document.createElement('div');
         document.body.appendChild(rootElement);
 
-        eventEmitter.emit(eventData, rootElement);
+        eventEmitter.emit(eventData, rootElement, true);
 
         expect(mockCallback).toHaveBeenCalledTimes(1);
         expect(mockCallback.mock.calls[0][0].detail).toEqual(eventData);
@@ -54,4 +54,24 @@ describe('EventEmitter', () => {
         window.removeEventListener(eventName, mockCallback);
         document.body.removeChild(rootElement);
     });
+
+  it('should not bubble the event up to the window object when bubbling is disabled', () => {
+    const eventName = 'testEvent';
+    const eventData = { key: 'value' };
+    const eventEmitter = new EventEmitter<typeof eventData>(eventName);
+
+    const mockCallback = jest.fn();
+    window.addEventListener(eventName, mockCallback);
+
+    const rootElement = document.createElement('div');
+    document.body.appendChild(rootElement);
+
+    // Emit without bubbling (default)
+    eventEmitter.emit(eventData, rootElement);
+
+    expect(mockCallback).not.toHaveBeenCalled();
+
+    window.removeEventListener(eventName, mockCallback);
+    document.body.removeChild(rootElement);
+  });
 });
