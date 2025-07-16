@@ -1,5 +1,11 @@
 # @ayu-sh-kr/dota-core
 
+## 1.7.2
+
+### Patch Changes
+
+- 79eeb2f: Fix the EventEmitter class where custom event was bubbling by default
+
 ## 1.7.1
 
 ### Patch Changes
